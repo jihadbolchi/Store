@@ -22,6 +22,8 @@ import {
   ExternalLink,
   RefreshCw,
   X,
+  Image as ImageIcon,
+  MessageSquare,
 } from 'lucide-react';
 
 export const AdminView: React.FC = () => {
@@ -44,6 +46,12 @@ export const AdminView: React.FC = () => {
     resetToDemoData,
     addToast,
     navigateTo,
+    heroBanner,
+    updateHeroBanner,
+    resetHeroBanner,
+    chatMessages,
+    setIsChatOpen,
+    isFirebaseSyncing,
   } = useStore();
 
   // Search & Filter state for Products Table
@@ -334,6 +342,56 @@ export const AdminView: React.FC = () => {
     addToast('Supabase SQL schema copied to clipboard!', 'success');
   };
 
+  // Hero Banner state & handlers
+  const [bannerForm, setBannerForm] = useState({
+    imageUrl: heroBanner.imageUrl,
+    title: heroBanner.title,
+    subtitle: heroBanner.subtitle,
+    ctaText: heroBanner.ctaText,
+  });
+
+  const handleBannerFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      addToast('Image size should be less than 5MB.', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64Url = event.target?.result as string;
+      setBannerForm((prev) => ({ ...prev, imageUrl: base64Url }));
+      addToast('Banner image loaded. Remember to click "Save Banner Settings".', 'success');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSaveBanner = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bannerForm.imageUrl.trim()) {
+      addToast('Hero banner image is required.', 'error');
+      return;
+    }
+    updateHeroBanner({
+      imageUrl: bannerForm.imageUrl.trim(),
+      title: bannerForm.title.trim() || 'Where Art Meets Craft',
+      subtitle: bannerForm.subtitle.trim() || 'Curated art & DIY craft essentials for passionate makers across Bangladesh.',
+      ctaText: bannerForm.ctaText.trim() || 'Explore Collection',
+    });
+  };
+
+  const handleResetBanner = () => {
+    resetHeroBanner();
+    setBannerForm({
+      imageUrl: '/src/assets/images/hero_tulips_craft_workspace_1793821760325.jpg',
+      title: 'Where Art Meets Craft',
+      subtitle: 'Curated art & DIY craft essentials for passionate makers across Bangladesh.',
+      ctaText: 'Explore Collection',
+    });
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Top Admin Bar */}
@@ -346,13 +404,21 @@ export const AdminView: React.FC = () => {
             <h1 className="text-xl font-bold text-stone-900 font-heading">
               Dhaka Art Nook — Store Admin
             </h1>
-            <p className="text-xs text-stone-500">
-              Authenticated Session · {currentUser?.email || 'Store Admin'}
+            <p className="text-xs text-stone-500 flex items-center gap-1.5 mt-0.5">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Firestore Cloud Connected · {currentUser?.email || 'Store Admin'}</span>
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={() => setIsChatOpen(true)}
+            className="px-3.5 py-2 bg-teal-50 hover:bg-teal-100 text-[#005C6E] text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span>Customer Chat ({chatMessages.length})</span>
+          </button>
           <button
             onClick={resetToDemoData}
             className="px-3.5 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
@@ -428,6 +494,18 @@ export const AdminView: React.FC = () => {
         >
           <ShoppingBag className="w-4 h-4" />
           <span>Orders ({orders.length})</span>
+        </button>
+
+        <button
+          onClick={() => setAdminTab('banner')}
+          className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 whitespace-nowrap cursor-pointer transition-all ${
+            adminTab === 'banner'
+              ? 'bg-[#0B6A75] text-white shadow-xs'
+              : 'bg-white text-stone-700 border border-stone-200 hover:bg-stone-50'
+          }`}
+        >
+          <ImageIcon className="w-4 h-4" />
+          <span>Hero Banner</span>
         </button>
 
         <button
@@ -554,6 +632,52 @@ export const AdminView: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+          </div>
+
+          {/* Live Customer Chats Card */}
+          <div className="bg-white rounded-3xl border border-stone-200 p-6 space-y-4 shadow-xs">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-bold text-stone-900 font-heading flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-[#0B6A75]" />
+                  <span>Real-time Customer Chats &amp; Inquiries</span>
+                </h2>
+                <p className="text-xs text-stone-500 mt-0.5">
+                  Saved directly to Firestore database · {chatMessages.length} total messages
+                </p>
+              </div>
+              <button
+                onClick={() => setIsChatOpen(true)}
+                className="px-3.5 py-1.5 bg-[#005C6E] hover:bg-[#004b5a] text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+              >
+                Open Live Chat
+              </button>
+            </div>
+
+            {chatMessages.length === 0 ? (
+              <p className="text-xs text-stone-500 py-3">No customer chat messages yet.</p>
+            ) : (
+              <div className="space-y-2 max-h-48 overflow-y-auto divide-y divide-stone-100 pr-1">
+                {chatMessages.slice(-5).map((msg) => (
+                  <div key={msg.id} className="pt-2 first:pt-0 flex items-start justify-between text-xs">
+                    <div>
+                      <div className="font-semibold text-stone-800 flex items-center gap-1.5">
+                        <span>{msg.senderName}</span>
+                        {msg.isAdmin && (
+                          <span className="text-[10px] bg-teal-50 text-[#005C6E] font-bold px-1.5 py-0.2 rounded-md border border-teal-200">
+                            Admin
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-stone-600 mt-0.5 text-xs">{msg.text}</p>
+                    </div>
+                    <span className="text-[10px] text-stone-400 shrink-0 ml-2">
+                      {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -792,6 +916,217 @@ export const AdminView: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB: HERO BANNER SETTINGS */}
+      {adminTab === 'banner' && (
+        <div className="space-y-8">
+          <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-xs">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pb-5 border-b border-stone-100">
+              <div>
+                <h2 className="text-xl font-bold text-stone-900 font-heading flex items-center gap-2.5">
+                  <ImageIcon className="w-5 h-5 text-[#0B6A75]" />
+                  <span>Homepage Hero Banner Settings</span>
+                </h2>
+                <p className="text-xs text-stone-500 mt-1">
+                  Customize the main hero image, headline, description, and CTA button seen by all visitors.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleResetBanner}
+                  className="px-3.5 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Reset to Default</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Live Interactive Preview Card */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-stone-700 uppercase tracking-wider">
+                  Live Preview (How it appears on Homepage)
+                </span>
+                <span className="text-[11px] text-stone-400">Desktop &amp; Mobile Responsive</span>
+              </div>
+
+              <div className="p-6 sm:p-8 bg-stone-50 rounded-2xl border border-stone-200">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                  <div className="md:col-span-7 space-y-3">
+                    <h3 className="text-2xl sm:text-3xl font-black text-stone-900 font-heading leading-tight">
+                      {bannerForm.title || 'Where Art Meets Craft'}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-stone-600 line-clamp-3">
+                      {bannerForm.subtitle || 'Curated art & DIY craft essentials for passionate makers across Bangladesh.'}
+                    </p>
+                    <div>
+                      <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#005C6E] text-white text-xs font-bold rounded-xl shadow-xs">
+                        {bannerForm.ctaText || 'Explore Collection'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-5">
+                    <div className="aspect-16/10 rounded-2xl overflow-hidden shadow-md border border-stone-200 bg-stone-200">
+                      <img
+                        src={bannerForm.imageUrl || '/src/assets/images/hero_tulips_craft_workspace_1793821760325.jpg'}
+                        alt="Hero Banner Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/src/assets/images/hero_tulips_craft_workspace_1793821760325.jpg';
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Banner Settings Form */}
+            <form onSubmit={handleSaveBanner} className="space-y-6 pt-2">
+              {/* Image Input Options */}
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-stone-800 block">
+                  Hero Banner Image <span className="text-rose-500">*</span>
+                </label>
+
+                {/* Local Device Upload Button */}
+                <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                  <label className="px-5 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-colors shrink-0">
+                    <Upload className="w-4 h-4" />
+                    <span>Upload Image from Phone / Computer</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBannerFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <span className="text-xs text-stone-400 text-center sm:text-left">or enter direct image URL below:</span>
+                </div>
+
+                {/* Direct Image URL input */}
+                <input
+                  type="text"
+                  required
+                  value={bannerForm.imageUrl}
+                  onChange={(e) => setBannerForm({ ...bannerForm, imageUrl: e.target.value })}
+                  placeholder="https://... or /src/assets/images/... or uploaded base64 data"
+                  className="w-full px-4 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs sm:text-sm font-mono text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#0B6A75]"
+                />
+              </div>
+
+              {/* Preset Gallery Choices */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-stone-700 block">
+                  Or pick from curated studio presets:
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                  {[
+                    {
+                      name: 'Pastel Tulips & Studio',
+                      url: '/src/assets/images/hero_tulips_craft_workspace_1793821760325.jpg',
+                    },
+                    {
+                      name: 'Artisan Workshop & Resin',
+                      url: '/src/assets/images/hero_art_craft_workspace_1793820211229.jpg',
+                    },
+                    {
+                      name: 'Hand-Carved Block Prints',
+                      url: '/src/assets/images/product_block_print_set_1793820211690.jpg',
+                    },
+                    {
+                      name: 'Artist Paints & Canvases',
+                      url: '/src/assets/images/product_oil_gouache_paints_1793820213139.jpg',
+                    },
+                    {
+                      name: 'Handmade Soap & Candle Wax',
+                      url: '/src/assets/images/product_soap_candle_wax_1793820212032.jpg',
+                    },
+                  ].map((preset, idx) => {
+                    const isSelected = bannerForm.imageUrl === preset.url;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setBannerForm({ ...bannerForm, imageUrl: preset.url })}
+                        className={`group p-2 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col gap-2 ${
+                          isSelected
+                            ? 'border-[#0B6A75] bg-teal-50/40 shadow-xs ring-2 ring-[#0B6A75]/20'
+                            : 'border-stone-200 hover:border-stone-300 bg-white'
+                        }`}
+                      >
+                        <div className="aspect-16/10 rounded-xl overflow-hidden bg-stone-100">
+                          <img
+                            src={preset.url}
+                            alt={preset.name}
+                            className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                          />
+                        </div>
+                        <span className="text-[11px] font-semibold text-stone-800 line-clamp-1">
+                          {preset.name}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Title, Subtitle, and CTA Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-stone-100">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-stone-700">Hero Main Title / Headline</label>
+                  <input
+                    type="text"
+                    value={bannerForm.title}
+                    onChange={(e) => setBannerForm({ ...bannerForm, title: e.target.value })}
+                    placeholder="Where Art Meets Craft"
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0B6A75]"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-stone-700">CTA Button Text</label>
+                  <input
+                    type="text"
+                    value={bannerForm.ctaText}
+                    onChange={(e) => setBannerForm({ ...bannerForm, ctaText: e.target.value })}
+                    placeholder="Explore Collection"
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0B6A75]"
+                  />
+                </div>
+
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-xs font-bold text-stone-700">Hero Subtitle / Description</label>
+                  <textarea
+                    rows={2}
+                    value={bannerForm.subtitle}
+                    onChange={(e) => setBannerForm({ ...bannerForm, subtitle: e.target.value })}
+                    placeholder="Curated art & DIY craft essentials for passionate makers across Bangladesh."
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0B6A75]"
+                  />
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-4 border-t border-stone-100 flex items-center justify-end gap-3">
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-[#0B6A75] hover:bg-[#084f57] active:scale-[0.99] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Save Banner Settings</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

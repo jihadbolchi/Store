@@ -8,6 +8,8 @@ import {
   OrderItem,
   ToastMessage,
   DeliveryArea,
+  HeroBannerSettings,
+  ChatMessage,
 } from '../types';
 import { INITIAL_CATEGORIES, INITIAL_PRODUCTS } from '../data/initialData';
 import { DELIVERY_CONFIG } from '../config/delivery';
@@ -15,6 +17,9 @@ import { buildWhatsAppOrderMessage, getWhatsAppOrderUrl } from '../utils/whatsap
 
 import {
   auth,
+  db,
+  handleFirestoreError,
+  OperationType,
   FirebaseUser,
 } from '../config/firebase';
 import {
@@ -26,6 +31,16 @@ import {
   onAuthStateChanged,
   updateProfile,
 } from 'firebase/auth';
+import {
+  collection,
+  doc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+  query,
+  orderBy,
+} from 'firebase/firestore';
 
 export type AppView =
   | 'home'
@@ -38,7 +53,7 @@ export type AppView =
   | 'about'
   | 'contact';
 
-export type AdminTab = 'dashboard' | 'products' | 'categories' | 'orders' | 'database';
+export type AdminTab = 'dashboard' | 'products' | 'categories' | 'orders' | 'banner' | 'database';
 
 interface StoreContextType {
   // Navigation & Views
@@ -111,6 +126,18 @@ interface StoreContextType {
   toasts: ToastMessage[];
   addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   removeToast: (id: string) => void;
+
+  // Hero Banner Settings
+  heroBanner: HeroBannerSettings;
+  updateHeroBanner: (settings: Partial<HeroBannerSettings>) => Promise<void>;
+  resetHeroBanner: () => void;
+
+  // Live Customer Chat & Database Synchronization
+  chatMessages: ChatMessage[];
+  isChatOpen: boolean;
+  setIsChatOpen: (open: boolean) => void;
+  sendChatMessage: (text: string, senderName?: string) => Promise<void>;
+  isFirebaseSyncing: boolean;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -120,6 +147,14 @@ const LS_KEY_CATEGORIES = 'dhaka_art_nook_categories_v1';
 const LS_KEY_CART = 'dhaka_art_nook_cart_v1';
 const LS_KEY_ORDERS = 'dhaka_art_nook_orders_v1';
 const LS_KEY_ADMIN_AUTH = 'dhaka_art_nook_admin_auth_v1';
+const LS_KEY_HERO_BANNER = 'dhaka_art_nook_hero_banner_v1';
+
+export const DEFAULT_HERO_BANNER: HeroBannerSettings = {
+  imageUrl: '/src/assets/images/hero_tulips_craft_workspace_1793821760325.jpg',
+  title: 'Where Art Meets Craft',
+  subtitle: 'Curated art & DIY craft essentials for passionate makers across Bangladesh.',
+  ctaText: 'Explore Collection',
+};
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Navigation
@@ -230,6 +265,55 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Firebase User Authentication state
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  // Hero Banner Settings state
+  const [heroBanner, setHeroBanner] = useState<HeroBannerSettings>(() => {
+    try {
+      const saved = localStorage.getItem(LS_KEY_HERO_BANNER);
+      if (saved) return { ...DEFAULT_HERO_BANNER, ...JSON.parse(saved) };
+    } catch (e) {
+      console.error(e);
+    }
+    return DEFAULT_HERO_BANNER;
+  });
+
+  const updateHeroBanner = async (settings: Partial<HeroBannerSettings>) => {
+    const updated = { ...heroBanner, ...settings };
+    setHeroBanner(updated);
+    try {
+      localStorage.setItem(LS_KEY_HERO_BANNER, JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+    addToast('Hero banner settings saved successfully!', 'success');
+
+    try {
+      await setDoc(doc(db, 'settings', 'heroBanner'), updated);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, 'settings/heroBanner');
+    }
+  };
+
+  const resetHeroBanner = async () => {
+    setHeroBanner(DEFAULT_HERO_BANNER);
+    try {
+      localStorage.setItem(LS_KEY_HERO_BANNER, JSON.stringify(DEFAULT_HERO_BANNER));
+    } catch (e) {
+      console.error(e);
+    }
+    addToast('Hero banner reset to default image & text.', 'info');
+
+    try {
+      await setDoc(doc(db, 'settings', 'heroBanner'), DEFAULT_HERO_BANNER);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, 'settings/heroBanner');
+    }
+  };
+
+  // Live Customer Support Chat state
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
+  const [isFirebaseSyncing, setIsFirebaseSyncing] = useState<boolean>(true);
 
   // Toast System state
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -395,6 +479,108 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     }
   };
+
+  // 1. Live Firestore Sync: Products
+  useEffect(() => {
+    const unsub = onSnapshot(
+      collection(db, 'products'),
+      async (snapshot) => {
+        setIsFirebaseSyncing(false);
+        if (!snapshot.empty) {
+          const liveProducts = snapshot.docs.map((d) => d.data() as Product);
+          setProducts(liveProducts);
+        } else {
+          // If Firestore collection is empty, seed initial products
+          for (const prod of INITIAL_PRODUCTS) {
+            try {
+              await setDoc(doc(db, 'products', prod.id), prod);
+            } catch (e) {
+              console.warn('Could not seed product to Firestore:', e);
+            }
+          }
+        }
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, 'products');
+      }
+    );
+    return () => unsub();
+  }, []);
+
+  // 2. Live Firestore Sync: Categories
+  useEffect(() => {
+    const unsub = onSnapshot(
+      collection(db, 'categories'),
+      async (snapshot) => {
+        if (!snapshot.empty) {
+          const liveCategories = snapshot.docs.map((d) => d.data() as Category);
+          setCategories(liveCategories);
+        } else {
+          for (const cat of INITIAL_CATEGORIES) {
+            try {
+              await setDoc(doc(db, 'categories', cat.id), cat);
+            } catch (e) {
+              console.warn('Could not seed category to Firestore:', e);
+            }
+          }
+        }
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, 'categories');
+      }
+    );
+    return () => unsub();
+  }, []);
+
+  // 3. Live Firestore Sync: Hero Banner Settings
+  useEffect(() => {
+    const unsub = onSnapshot(
+      doc(db, 'settings', 'heroBanner'),
+      (docSnap) => {
+        if (docSnap.exists()) {
+          setHeroBanner(docSnap.data() as HeroBannerSettings);
+        }
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, 'settings/heroBanner');
+      }
+    );
+    return () => unsub();
+  }, []);
+
+  // 4. Live Firestore Sync: Orders
+  useEffect(() => {
+    const unsub = onSnapshot(
+      collection(db, 'orders'),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const liveOrders = snapshot.docs.map((d) => d.data() as Order);
+          liveOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          setOrders(liveOrders);
+        }
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, 'orders');
+      }
+    );
+    return () => unsub();
+  }, []);
+
+  // 5. Live Firestore Sync: Chats
+  useEffect(() => {
+    const q = query(collection(db, 'chats'), orderBy('createdAt', 'asc'));
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        const liveChats = snapshot.docs.map((d) => d.data() as ChatMessage);
+        setChatMessages(liveChats);
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, 'chats');
+      }
+    );
+    return () => unsub();
+  }, []);
 
   // Sync products to localStorage
   useEffect(() => {
@@ -594,9 +780,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const waUrl = getWhatsAppOrderUrl(message);
 
-    // Persist order in store
+    // Persist order in store & Firestore
     setOrders((prev) => [order, ...prev]);
     setLastCompletedOrder(order);
+
+    try {
+      setDoc(doc(db, 'orders', order.id), order).catch((err) => {
+        console.warn('Could not sync order to Firestore:', err);
+      });
+    } catch (e) {
+      console.warn(e);
+    }
 
     // Clear cart
     clearCart();
@@ -616,6 +810,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const order = createOrderObject(customer, 'cod');
     setOrders((prev) => [order, ...prev]);
     setLastCompletedOrder(order);
+    try {
+      setDoc(doc(db, 'orders', order.id), order).catch((err) => {
+        console.warn('Could not sync order to Firestore:', err);
+      });
+    } catch (e) {
+      console.warn(e);
+    }
     clearCart();
     navigateTo('order-success');
     addToast('Order placed successfully! We will contact you soon.', 'success');
@@ -627,6 +828,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setOrders((prev) =>
       prev.map((ord) => (ord.id === orderId ? { ...ord, status } : ord))
     );
+    try {
+      updateDoc(doc(db, 'orders', orderId), { status }).catch((err) => {
+        console.warn('Firestore order status update error:', err);
+      });
+    } catch (e) {
+      console.warn(e);
+    }
     addToast(`Order ${orderId} updated to ${status}.`, 'info');
   };
 
@@ -651,8 +859,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     addToast('Logged out of Admin panel.', 'info');
   };
 
-  // Product CRUD
-  const addProduct = (data: Omit<Product, 'id' | 'createdAt'>) => {
+  // Product CRUD with Firestore Persistence
+  const addProduct = async (data: Omit<Product, 'id' | 'createdAt'>) => {
     const id = `prod-${Date.now()}`;
     const newProduct: Product = {
       ...data,
@@ -661,22 +869,40 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
     setProducts((prev) => [newProduct, ...prev]);
     addToast(`Product "${data.name}" added successfully.`, 'success');
+
+    try {
+      await setDoc(doc(db, 'products', id), newProduct);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `products/${id}`);
+    }
   };
 
-  const updateProduct = (id: string, data: Partial<Product>) => {
+  const updateProduct = async (id: string, data: Partial<Product>) => {
     setProducts((prev) =>
       prev.map((item) => (item.id === id ? { ...item, ...data } : item))
     );
     addToast('Product updated successfully.', 'success');
+
+    try {
+      await updateDoc(doc(db, 'products', id), data);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `products/${id}`);
+    }
   };
 
-  const deleteProduct = (id: string) => {
+  const deleteProduct = async (id: string) => {
     setProducts((prev) => prev.filter((item) => item.id !== id));
     addToast('Product deleted from inventory.', 'info');
+
+    try {
+      await deleteDoc(doc(db, 'products', id));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `products/${id}`);
+    }
   };
 
-  // Category CRUD
-  const addCategory = (data: Omit<Category, 'id'>) => {
+  // Category CRUD with Firestore Persistence
+  const addCategory = async (data: Omit<Category, 'id'>) => {
     const id = `cat-${Date.now()}`;
     const newCategory: Category = {
       ...data,
@@ -685,25 +911,77 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
     setCategories((prev) => [...prev, newCategory]);
     addToast(`Category "${data.name}" created.`, 'success');
+
+    try {
+      await setDoc(doc(db, 'categories', id), newCategory);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `categories/${id}`);
+    }
   };
 
-  const updateCategory = (id: string, data: Partial<Category>) => {
+  const updateCategory = async (id: string, data: Partial<Category>) => {
     setCategories((prev) =>
       prev.map((item) => (item.id === id ? { ...item, ...data } : item))
     );
     addToast('Category updated.', 'success');
+
+    try {
+      await updateDoc(doc(db, 'categories', id), data);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `categories/${id}`);
+    }
   };
 
-  const deleteCategory = (id: string) => {
+  const deleteCategory = async (id: string) => {
     setCategories((prev) => prev.filter((item) => item.id !== id));
     addToast('Category removed.', 'info');
+
+    try {
+      await deleteDoc(doc(db, 'categories', id));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `categories/${id}`);
+    }
   };
 
-  // Reset demo data
-  const resetToDemoData = () => {
+  // Live Customer Chat Message Dispatcher
+  const sendChatMessage = async (text: string, senderName?: string) => {
+    if (!text.trim()) return;
+    const msgId = `chat-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const msg: ChatMessage = {
+      id: msgId,
+      senderId: currentUser?.uid || 'guest-visitor',
+      senderName: senderName || currentUser?.displayName || (isUserAdmin ? 'Dhaka Art Nook Support' : 'Customer'),
+      senderEmail: currentUser?.email || undefined,
+      text: text.trim(),
+      isAdmin: Boolean(isUserAdmin),
+      createdAt: new Date().toISOString(),
+    };
+    setChatMessages((prev) => [...prev, msg]);
+
+    try {
+      await setDoc(doc(db, 'chats', msgId), msg);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, `chats/${msgId}`);
+    }
+  };
+
+  // Reset demo data to Firestore & Local
+  const resetToDemoData = async () => {
     setProducts(INITIAL_PRODUCTS);
     setCategories(INITIAL_CATEGORIES);
-    addToast('Reset catalog to authentic demo data.', 'info');
+    addToast('Resetting catalog to authentic demo data...', 'info');
+
+    try {
+      for (const prod of INITIAL_PRODUCTS) {
+        await setDoc(doc(db, 'products', prod.id), prod);
+      }
+      for (const cat of INITIAL_CATEGORIES) {
+        await setDoc(doc(db, 'categories', cat.id), cat);
+      }
+      addToast('Cloud catalog reset completed.', 'success');
+    } catch (e) {
+      console.warn('Could not sync reset demo data to Firestore:', e);
+    }
   };
 
   return (
@@ -772,6 +1050,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         toasts,
         addToast,
         removeToast,
+
+        heroBanner,
+        updateHeroBanner,
+        resetHeroBanner,
+
+        chatMessages,
+        isChatOpen,
+        setIsChatOpen,
+        sendChatMessage,
+        isFirebaseSyncing,
       }}
     >
       {children}

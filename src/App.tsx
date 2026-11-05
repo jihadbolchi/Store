@@ -10,6 +10,7 @@ import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { Toast } from './components/Toast';
 import { AuthModal } from './components/AuthModal';
+import { LiveChatWidget } from './components/LiveChatWidget';
 
 // Views
 import { HomeView } from './views/HomeView';
@@ -61,6 +62,9 @@ export default function App() {
 
         {/* Firebase User Authentication Modal */}
         <AuthModal />
+
+        {/* Real-time Customer Live Chat connected to Firestore */}
+        <LiveChatWidget />
 
         {/* Floating WhatsApp Quick Action on Mobile / Small screens */}
         <div className="fixed bottom-5 left-5 z-40 sm:hidden">

@@ -76,3 +76,20 @@ export interface ToastMessage {
   type: 'success' | 'error' | 'info';
   message: string;
 }
+
+export interface HeroBannerSettings {
+  imageUrl: string;
+  title: string;
+  subtitle: string;
+  ctaText: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderEmail?: string;
+  text: string;
+  isAdmin: boolean;
+  createdAt: string;
+}

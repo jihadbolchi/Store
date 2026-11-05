@@ -4,7 +4,7 @@ import { ProductCard } from '../components/ProductCard';
 import { ArrowRight, Tag } from 'lucide-react';
 
 export const HomeView: React.FC = () => {
-  const { products, categories, navigateTo } = useStore();
+  const { products, categories, navigateTo, heroBanner } = useStore();
 
   // Category filter state specifically for the "All Products" section on the homepage
   const [selectedHomeCategory, setSelectedHomeCategory] = useState<string>('all');
@@ -35,10 +35,10 @@ export const HomeView: React.FC = () => {
             <div className="lg:col-span-6 space-y-6">
               <div className="space-y-3">
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-stone-900 font-heading tracking-tight leading-tight [text-wrap:balance]">
-                  Where Art Meets Craft
+                  {heroBanner.title}
                 </h1>
                 <p className="text-base sm:text-lg text-stone-600 font-normal leading-relaxed max-w-lg">
-                  Curated art &amp; DIY craft essentials for passionate makers across Bangladesh.
+                  {heroBanner.subtitle}
                 </p>
               </div>
 
@@ -55,7 +55,7 @@ export const HomeView: React.FC = () => {
                   }}
                   className="px-7 py-4 bg-[#005C6E] hover:bg-[#004b5a] active:scale-95 text-white font-bold text-sm rounded-2xl shadow-md flex items-center gap-2.5 transition-all cursor-pointer group"
                 >
-                  <span>Explore Collection</span>
+                  <span>{heroBanner.ctaText}</span>
                   <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
@@ -65,8 +65,8 @@ export const HomeView: React.FC = () => {
             <div className="lg:col-span-6 relative">
               <div className="relative rounded-3xl overflow-hidden shadow-xl border border-stone-200/90 bg-stone-100 aspect-16/10 sm:aspect-16/9 lg:aspect-4/3 group">
                 <img
-                  src="/src/assets/images/hero_tulips_craft_workspace_1793821760325.jpg"
-                  alt="Pastel tulips in ceramic vase with artisanal craft items on studio workbench"
+                  src={heroBanner.imageUrl || '/src/assets/images/hero_tulips_craft_workspace_1793821760325.jpg'}
+                  alt={heroBanner.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
                 />
               </div>
