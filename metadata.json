@@ -1,0 +1,6 @@
+{
+  "name": "Dhaka Art Nook – Art & Craft Supplies",
+  "description": "Authentic art & craft supplies store in Dhaka, Bangladesh: resin art kits, handmade block prints, paints, canvases, soap and candle making supplies.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

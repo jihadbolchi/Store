@@ -1,0 +1,39 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return request.auth != null &&
+        request.auth.token.email.lower() == 'jihadbolchi@gmail.com' &&
+        request.auth.token.email_verified == true;
+    }
+
+    // Public product images: Public read, Admin-only upload/modify/delete
+    match /products/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Category images: Public read, Admin-only upload/modify/delete
+    match /categories/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // User profile or uploaded assets: Authenticated owner or Admin
+    match /users/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if (isAuthenticated() && request.auth.uid == userId) || isAdmin();
+    }
+
+    // Default deny for everything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
