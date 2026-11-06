@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from '../components/ProductCard';
-import { Search, Filter, SlidersHorizontal, RotateCcw, PackageCheck } from 'lucide-react';
+import { Search, Filter, SlidersHorizontal, RotateCcw, PackageCheck, X } from 'lucide-react';
 
 export const ShopView: React.FC = () => {
   const {
@@ -81,7 +81,7 @@ export const ShopView: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#e9e7e1]">
         <div>
           <div className="section-kicker mb-2">
-            Artisan Catalog
+            The collection
           </div>
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[#202525] font-heading">
             {activeCategory ? activeCategory.name : 'All Art & Craft Supplies'}
@@ -89,11 +89,11 @@ export const ShopView: React.FC = () => {
           <p className="text-sm text-[#747b79] mt-2 max-w-2xl leading-6">
             {activeCategory
               ? activeCategory.description
-              : 'Browse our complete catalog of curated artist materials with doorstep delivery across Bangladesh.'}
+              : 'Thoughtfully selected materials for your next creative project.'}
           </p>
         </div>
 
-        <div className="text-xs text-stone-500 font-medium">
+        <div className="text-sm text-[#747b79] leading-6 font-medium">
           Showing <span className="font-bold text-stone-900 font-tabular">{filteredProducts.length}</span> of {products.length} products
         </div>
       </div>
@@ -107,10 +107,10 @@ export const ShopView: React.FC = () => {
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <input
               type="text"
-              placeholder="Search resin, wood blocks, wax, paints..."
+              placeholder="Search products and materials..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#e4e2dc] rounded-xl text-xs sm:text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#006673] transition-all shadow-2xs"
+              aria-label="Search products" className="w-full pl-10 pr-10 py-3 bg-white border border-[#e9e7e1] rounded-xl text-sm text-[#202525] placeholder:text-[#9a9f9b] focus:outline-none focus:ring-2 focus:ring-[#006673]/20 focus:border-[#006673] transition-all"
             />
             {searchQuery && (
               <button
@@ -124,7 +124,7 @@ export const ShopView: React.FC = () => {
 
           {/* Sort Dropdown & In-Stock Switch */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-700 shadow-2xs">
+            <div className="flex items-center gap-1.5 bg-white border border-[#e9e7e1] rounded-xl px-3 py-2.5 text-xs text-[#52605d]">
               <SlidersHorizontal className="w-3.5 h-3.5 text-stone-500 shrink-0" />
               <label htmlFor="shop-sort" className="font-medium text-stone-500 whitespace-nowrap">Sort:</label>
               <select
@@ -177,7 +177,7 @@ export const ShopView: React.FC = () => {
                 onClick={() => setActiveCategoryFilter(cat.id)}
                 className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[#0B6A75] text-white shadow-xs'
+                    ? 'bg-[#006673] text-white shadow-xs'
                     : 'bg-white text-stone-700 border border-stone-200 hover:bg-stone-50'
                 }`}
               >
@@ -188,17 +188,28 @@ export const ShopView: React.FC = () => {
         </div>
       </div>
 
+      {/* Active filter summary */}
+      {(searchQuery || activeCategoryFilter !== 'all' || inStockOnly) && (
+        <div className="flex flex-wrap items-center gap-2 text-xs text-[#747b79]">
+          <span>Active filters:</span>
+          {searchQuery && <span className="inline-flex items-center gap-1 rounded-full bg-[#edf5f4] px-3 py-1.5 text-[#006673]">“{searchQuery}” <button aria-label="Clear search" onClick={() => setSearchQuery('')}><X size={12}/></button></span>}
+          {activeCategory && <span className="rounded-full bg-[#edf5f4] px-3 py-1.5 text-[#006673]">{activeCategory.name}</span>}
+          {inStockOnly && <span className="rounded-full bg-[#edf5f4] px-3 py-1.5 text-[#006673]">In stock</span>}
+          <button onClick={resetFilters} className="font-semibold text-[#006673] underline underline-offset-2">Clear all</button>
+        </div>
+      )}
+
       {/* Product Grid or Empty State */}
       {filteredProducts.length === 0 ? (
-        <div className="bg-white rounded-3xl border border-stone-200 p-12 text-center max-w-md mx-auto my-12 space-y-4">
+        <div className="bg-white rounded-2xl border border-[#e9e7e1] p-10 sm:p-12 text-center max-w-md mx-auto my-12 space-y-4">
           <div className="w-14 h-14 rounded-2xl bg-stone-100 flex items-center justify-center text-stone-400 mx-auto">
             <Filter className="w-7 h-7" />
           </div>
-          <h3 className="text-base font-bold text-stone-900 font-heading">
+          <h3 className="text-lg font-semibold text-[#202525] font-heading">
             No Supplies Found
           </h3>
           <p className="text-xs text-stone-500">
-            We couldn't find any items matching your active filters or search terms. Try clearing filters or searching for resin, blocks, or pigments.
+            Try a different search or clear the filters to see the full collection.
           </p>
           <button
             onClick={resetFilters}
