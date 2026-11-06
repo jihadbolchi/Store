@@ -43,6 +43,12 @@ export const Header: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') setPanelOpen(false); };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, []);
+
   const handleNavClick = (view: any) => {
     navigateTo(view);
     setPanelOpen(false);
@@ -88,11 +94,11 @@ export const Header: React.FC = () => {
           <button
             onClick={() => setIsCartDrawerOpen(true)}
             aria-label="Open Cart Drawer"
-            className="relative p-2 text-stone-700 hover:text-[#005C6E] hover:bg-stone-100/80 rounded-xl transition-colors cursor-pointer group"
+            className="relative p-2 text-stone-700 hover:text-[#006673] hover:bg-[#edf5f4] rounded-xl transition-colors cursor-pointer group"
           >
-            <ShoppingBag className="w-5 h-5 group-hover:scale-105 transition-transform text-[#005C6E]" />
+            <ShoppingBag className="w-5 h-5 group-hover:scale-105 transition-transform text-[#006673]" />
             {cartCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-[#FFA000] text-stone-900 font-bold text-[10px] sm:text-[11px] w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shadow-xs font-tabular animate-scale">
+              <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-[#FFA000] text-stone-900 font-bold text-[10px] sm:text-[11px] w-5 h-5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shadow-xs font-tabular animate-scale">
                 {cartCount}
               </span>
             )}
@@ -102,7 +108,9 @@ export const Header: React.FC = () => {
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setPanelOpen(!panelOpen)}
-              aria-label="Open Navigation and Account Menu"
+              aria-label="Open navigation and account menu"
+              aria-expanded={panelOpen}
+              aria-haspopup="true"
               className="p-1.5 sm:p-2 flex items-center gap-1.5 rounded-xl border border-stone-200/90 hover:bg-stone-100/80 transition-colors cursor-pointer text-stone-700"
             >
               {currentUser ? (
@@ -114,7 +122,7 @@ export const Header: React.FC = () => {
                       className="w-6 h-6 rounded-lg object-cover"
                     />
                   ) : (
-                    <div className="w-6 h-6 rounded-lg bg-[#005C6E] text-white font-bold text-[11px] flex items-center justify-center">
+                    <div className="w-6 h-6 rounded-lg bg-[#006673] text-white font-bold text-[11px] flex items-center justify-center">
                       {(currentUser.displayName || currentUser.email || 'U')[0].toUpperCase()}
                     </div>
                   )}
@@ -129,13 +137,13 @@ export const Header: React.FC = () => {
 
             {/* Merged Navigation & Profile Flyout Panel */}
             {panelOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl border border-stone-200 shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 text-stone-800">
+              <div role="dialog" aria-label="Navigation and account menu" className="absolute right-0 mt-2 w-[min(18rem,calc(100vw-1.5rem))] bg-white rounded-2xl border border-[#e9e7e1] shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 text-[#263536] max-h-[calc(100dvh-6rem)] overflow-y-auto">
                 {/* Section A: Navigation Links */}
                 <div className="py-1 space-y-0.5 text-xs font-medium">
                   <button
                     onClick={() => handleNavClick('home')}
                     className={`w-full px-3 py-2 text-left rounded-xl hover:bg-[#f7f8f5] hover:text-[#006673] transition-colors cursor-pointer flex items-center justify-between ${
-                      currentView === 'home' ? 'text-[#005C6E] font-bold bg-[#edf5f4]' : ''
+                      currentView === 'home' ? 'text-[#006673] font-bold bg-[#edf5f4]' : ''
                     }`}
                   >
                     <span>Home</span>
@@ -143,7 +151,7 @@ export const Header: React.FC = () => {
 
                   <button
                     onClick={() => handleSectionClick('new-arrivals')}
-                    className="w-full px-3 py-2 text-left rounded-xl hover:bg-stone-50 hover:text-[#005C6E] transition-colors cursor-pointer"
+                    className="w-full px-3 py-2 text-left rounded-xl hover:bg-[#f7f8f5] hover:text-[#006673] transition-colors cursor-pointer"
                   >
                     <span>New Arrivals</span>
                   </button>
@@ -218,9 +226,9 @@ export const Header: React.FC = () => {
                           navigateTo('admin');
                           setPanelOpen(false);
                         }}
-                        className="w-full px-3 py-2 text-left text-xs font-bold text-[#005C6E] hover:bg-teal-50 rounded-xl flex items-center gap-2 cursor-pointer transition-colors"
+                        className="w-full px-3 py-2 text-left text-xs font-bold text-[#006673] hover:bg-[#edf5f4] rounded-xl flex items-center gap-2 cursor-pointer transition-colors"
                       >
-                        <Shield className="w-3.5 h-3.5 text-[#005C6E]" />
+                        <Shield className="w-3.5 h-3.5 text-[#006673]" />
                         <span>Admin Panel</span>
                       </button>
                     )}
