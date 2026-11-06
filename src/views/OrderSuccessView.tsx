@@ -134,9 +134,11 @@ export const OrderSuccessView: React.FC = () => {
             <div className="font-bold text-stone-900">Delivery Address</div>
             <div className="text-stone-700">{order.customer.address}</div>
             <div className="text-[#0B6A75] font-semibold">
-              {order.customer.deliveryArea === 'inside_dhaka'
-                ? 'Inside Dhaka Metro (৳80 delivery fee)'
-                : 'Outside Dhaka (৳130 courier fee)'}
+              {order.deliveryCharge === 0
+                ? 'Free delivery'
+                : order.customer.deliveryArea === 'inside_dhaka'
+                  ? `Inside Dhaka Metro (৳${DELIVERY_CONFIG.insideDhaka.fee} delivery fee)`
+                  : `Outside Dhaka (৳${DELIVERY_CONFIG.outsideDhaka.fee} courier fee)`}
             </div>
             {order.notes && (
               <div className="text-stone-500 italic mt-1">Note: "{order.notes}"</div>
