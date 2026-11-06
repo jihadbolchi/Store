@@ -5,7 +5,7 @@ import { Facebook, Instagram, MapPin, Phone, MessageCircle, ArrowUpRight } from 
 
 export const Footer: React.FC = () => {
   const { navigateTo, setActiveCategoryFilter } = useStore();
-  const goCategory = (id: string) => { setActiveCategoryFilter(id); navigateTo('shop'); };
+  const goCategory = () => { setActiveCategoryFilter('all'); navigateTo('shop'); };
   return (
     <footer className="mt-8 bg-[#173d40] text-white">
       <div className="page-shell py-12 sm:py-16">
@@ -27,7 +27,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-3 text-sm text-white/75">
               <li><button onClick={() => navigateTo('home')} className="hover:text-white">Home</button></li>
               <li><button onClick={() => navigateTo('shop')} className="hover:text-white">Shop all</button></li>
-              <li><button onClick={() => goCategory('cat-resin')} className="hover:text-white">Resin art</button></li>
+              <li><button onClick={goCategory} className="hover:text-white">Browse craft supplies</button></li>
               <li><button onClick={() => navigateTo('about')} className="hover:text-white">About the brand</button></li>
             </ul>
           </div>
