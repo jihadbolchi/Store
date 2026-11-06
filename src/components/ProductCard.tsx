@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Product } from '../types';
 import { useStore } from '../context/StoreContext';
 import { ShoppingBag, ArrowUpRight } from 'lucide-react';
-import { DELIVERY_CONFIG } from '../config/delivery';
 
 interface ProductCardProps {
   product: Product;
@@ -29,12 +28,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       tabIndex={0}
       aria-label={`View ${product.name}`}
       onKeyDown={(e) => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); viewProductDetail(product); } }}
-      className="group relative bg-white border border-stone-200 rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B6A75] flex flex-col cursor-pointer"
+      className="group relative bg-white border border-[#e9e7e1] rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#006673] flex flex-col cursor-pointer"
     >
       {/* Image Container with Aspect Ratio */}
       <div className="relative aspect-square sm:aspect-4/3 w-full overflow-hidden bg-stone-50">
         {primaryImage && !imageFailed ? (
-          <img src={primaryImage} alt={product.name} loading="lazy" referrerPolicy="no-referrer"
+          <img src={primaryImage} alt={product.name} loading="lazy" decoding="async" sizes="(max-width: 640px) 46vw, (max-width: 1024px) 30vw, 22vw" referrerPolicy="no-referrer"
             onError={() => setImageFailed(true)}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         ) : (
@@ -57,7 +56,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         {/* Discount Tag */}
         {hasDiscount && product.inStock && (
-          <div className="absolute top-2.5 right-2.5 bg-[#FF8F00] text-stone-900 text-[11px] font-bold px-2 py-0.5 rounded-md shadow-xs font-tabular">
+          <div className="absolute top-2.5 right-2.5 bg-[#fff0cc] text-[#85570a] text-[11px] font-bold px-2 py-0.5 rounded-md shadow-xs font-tabular">
             Save {discountPercent}%
           </div>
         )}
@@ -82,7 +81,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
 
         {/* Price & Action Row */}
-        <div className="mt-3 pt-3 border-t border-stone-100 flex items-center justify-between gap-2">
+        <div className="mt-3 pt-3 border-t border-[#f0efeb] flex items-center justify-between gap-2">
           <div>
             <div className="flex items-baseline gap-1.5">
               <span className="text-sm sm:text-base font-bold text-stone-900 font-tabular">
@@ -94,7 +93,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 </span>
               )}
             </div>
-            <div className="text-[10px] text-stone-500">
+            <div className="text-[10px] text-[#858d88]">
               {product.inStock ? `${product.stock} in stock` : 'Restocking soon'}
             </div>
           </div>
