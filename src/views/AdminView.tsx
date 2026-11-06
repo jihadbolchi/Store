@@ -23,14 +23,13 @@ import {
   RefreshCw,
   X,
   Image as ImageIcon,
-  MessageSquare,
 } from 'lucide-react';
 
 export const AdminView: React.FC = () => {
   const {
     isUserAdmin,
     currentUser,
-    logoutAdmin,
+    signOutUser,
     adminTab,
     setAdminTab,
     products,
@@ -49,8 +48,6 @@ export const AdminView: React.FC = () => {
     heroBanner,
     updateHeroBanner,
     resetHeroBanner,
-    chatMessages,
-    setIsChatOpen,
     isFirebaseSyncing,
   } = useStore();
 
@@ -412,13 +409,7 @@ export const AdminView: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <button
-            onClick={() => setIsChatOpen(true)}
-            className="px-3.5 py-2 bg-teal-50 hover:bg-teal-100 text-[#005C6E] text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>Customer Chat ({chatMessages.length})</span>
-          </button>
+>
           <button
             onClick={resetToDemoData}
             className="px-3.5 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
@@ -437,7 +428,7 @@ export const AdminView: React.FC = () => {
           </button>
 
           <button
-            onClick={logoutAdmin}
+            onClick={signOutUser}
             className="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
@@ -636,51 +627,7 @@ export const AdminView: React.FC = () => {
             )}
           </div>
 
-          {/* Live Customer Chats Card */}
-          <div className="bg-white rounded-3xl border border-stone-200 p-6 space-y-4 shadow-xs">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-bold text-stone-900 font-heading flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-[#0B6A75]" />
-                  <span>Real-time Customer Chats &amp; Inquiries</span>
-                </h2>
-                <p className="text-xs text-stone-500 mt-0.5">
-                  Saved directly to Firestore database · {chatMessages.length} total messages
-                </p>
-              </div>
-              <button
-                onClick={() => setIsChatOpen(true)}
-                className="px-3.5 py-1.5 bg-[#005C6E] hover:bg-[#004b5a] text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
-              >
-                Open Live Chat
-              </button>
-            </div>
 
-            {chatMessages.length === 0 ? (
-              <p className="text-xs text-stone-500 py-3">No customer chat messages yet.</p>
-            ) : (
-              <div className="space-y-2 max-h-48 overflow-y-auto divide-y divide-stone-100 pr-1">
-                {chatMessages.slice(-5).map((msg) => (
-                  <div key={msg.id} className="pt-2 first:pt-0 flex items-start justify-between text-xs">
-                    <div>
-                      <div className="font-semibold text-stone-800 flex items-center gap-1.5">
-                        <span>{msg.senderName}</span>
-                        {msg.isAdmin && (
-                          <span className="text-[10px] bg-teal-50 text-[#005C6E] font-bold px-1.5 py-0.2 rounded-md border border-teal-200">
-                            Admin
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-stone-600 mt-0.5 text-xs">{msg.text}</p>
-                    </div>
-                    <span className="text-[10px] text-stone-400 shrink-0 ml-2">
-                      {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       )}
 
