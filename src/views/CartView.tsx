@@ -22,19 +22,19 @@ export const CartView: React.FC = () => {
 
   if (cart.length === 0) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-20 text-center space-y-4">
-        <div className="w-20 h-20 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 mx-auto">
+      <div className="page-shell max-w-3xl py-20 text-center space-y-5">
+        <div className="w-20 h-20 rounded-full bg-[#edf5f4] flex items-center justify-center text-[#006673] mx-auto">
           <ShoppingBag className="w-10 h-10" />
         </div>
-        <h1 className="text-2xl font-bold text-stone-900 font-heading">
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#202525] font-heading">
           Your Shopping Bag is Empty
         </h1>
-        <p className="text-sm text-stone-500 max-w-md mx-auto">
-          Explore our collection of authentic resin kits, seasoned Sheesham block prints, organic wax, and artist paints.
+        <p className="text-sm text-[#747b79] max-w-md mx-auto leading-6">
+          Discover materials for your next creative project.
         </p>
         <button
           onClick={() => navigateTo('shop')}
-          className="mt-2 inline-flex items-center gap-2 px-6 py-3 bg-[#005C6E] hover:bg-[#004b5a] text-white text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-xs"
+          className="mt-2 inline-flex items-center gap-2 px-6 py-3 bg-[#006673] hover:bg-[#00545f] text-white text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-xs"
         >
           <span>Explore Art Supplies</span>
           <ArrowRight className="w-4 h-4" />
@@ -44,18 +44,18 @@ export const CartView: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="page-shell py-8 sm:py-12 space-y-8">
       {/* Heading */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-stone-200">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-[#e9e7e1]">
         <div>
           <button
             onClick={() => navigateTo('shop')}
-            className="text-xs font-semibold text-[#005C6E] hover:underline flex items-center gap-1.5 mb-2 cursor-pointer"
+            className="text-xs font-semibold text-[#006673] hover:underline flex items-center gap-1.5 mb-2 cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Continue Shopping</span>
           </button>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 font-heading">
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#202525] font-heading">
             Shopping Cart ({cartCount} {cartCount === 1 ? 'item' : 'items'})
           </h1>
         </div>
@@ -69,7 +69,7 @@ export const CartView: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left: Cart Items List */}
-        <div className="lg:col-span-8 bg-white rounded-3xl border border-stone-200 divide-y divide-stone-100 overflow-hidden shadow-xs">
+        <div className="lg:col-span-8 bg-white rounded-2xl border border-[#e9e7e1] divide-y divide-[#f0efeb] overflow-hidden">
           {cart.map((item) => {
             const effectivePrice = item.product.discountPrice ?? item.product.price;
             return (
@@ -82,10 +82,10 @@ export const CartView: React.FC = () => {
                     className="w-18 h-18 sm:w-20 sm:h-20 object-cover rounded-2xl border border-stone-200 bg-stone-50 shrink-0"
                   />
                   <div className="min-w-0 flex-1">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[#005C6E]">
+                    <span className="text-[10px] font-semibold uppercase tracking-[.12em] text-[#006673]">
                       {item.product.categoryName}
                     </span>
-                    <h3 className="text-sm sm:text-base font-bold text-stone-900 leading-snug truncate">
+                    <h3 className="text-sm sm:text-base font-semibold text-[#202525] leading-snug truncate">
                       {item.product.name}
                     </h3>
                     <div className="text-xs text-stone-500 mt-0.5 font-tabular">
@@ -99,7 +99,7 @@ export const CartView: React.FC = () => {
                   <div className="flex items-center border border-stone-200 rounded-xl bg-stone-50 p-1">
                     <button
                       onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)}
-                      className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white rounded-lg transition-colors cursor-pointer"
+                      aria-label={`Decrease quantity of ${item.product.name}`} className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white rounded-lg transition-colors cursor-pointer"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
@@ -109,7 +109,7 @@ export const CartView: React.FC = () => {
                     <button
                       onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)}
                       disabled={item.quantity >= item.product.stock}
-                      className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white rounded-lg transition-colors cursor-pointer disabled:opacity-30"
+                      aria-label={`Increase quantity of ${item.product.name}`} className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white rounded-lg transition-colors cursor-pointer disabled:opacity-30"
                     >
                       <Plus className="w-3 h-3" />
                     </button>
@@ -123,7 +123,7 @@ export const CartView: React.FC = () => {
 
                   <button
                     onClick={() => removeFromCart(item.product.id)}
-                    className="text-stone-400 hover:text-rose-600 p-1 transition-colors cursor-pointer"
+                    aria-label={`Remove ${item.product.name} from cart`} className="text-stone-400 hover:text-rose-600 p-1 transition-colors cursor-pointer"
                     title="Remove item"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -135,8 +135,8 @@ export const CartView: React.FC = () => {
         </div>
 
         {/* Right: Order Summary */}
-        <div className="lg:col-span-4 bg-white rounded-3xl border border-stone-200 p-6 space-y-6 shadow-xs">
-          <h2 className="text-lg font-bold text-stone-900 font-heading">
+        <div className="lg:col-span-4 bg-white rounded-2xl border border-[#e9e7e1] p-5 sm:p-6 space-y-6 shadow-xs lg:sticky lg:top-28">
+          <h2 className="text-lg font-semibold text-[#202525] font-heading">
             Order Summary
           </h2>
 
@@ -147,14 +147,14 @@ export const CartView: React.FC = () => {
             </div>
             <div className="flex justify-between text-stone-500 text-xs">
               <span>Delivery</span>
-              <span className="text-right">Calculated at checkout (৳80 / ৳130)</span>
+              <span className="text-right">Added at checkout based on delivery area</span>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-stone-200 flex justify-between items-baseline">
-            <span className="font-bold text-stone-900 text-base">Estimated Total</span>
+          <div className="pt-4 border-t border-[#e9e7e1] flex justify-between items-baseline">
+            <span className="font-bold text-stone-900 text-base">Items Total</span>
             <div className="text-right">
-              <span className="text-2xl font-extrabold text-[#005C6E] font-tabular">
+              <span className="text-2xl font-bold text-[#006673] font-tabular">
                 ৳{cartSubtotal}
               </span>
             </div>
@@ -162,7 +162,7 @@ export const CartView: React.FC = () => {
 
           <button
             onClick={() => navigateTo('checkout')}
-            className="w-full py-3.5 px-6 bg-[#005C6E] hover:bg-[#004b5a] active:scale-[0.99] text-white font-bold text-sm rounded-xl shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+            className="w-full py-3.5 px-6 bg-[#006673] hover:bg-[#00545f] active:scale-[0.99] text-white font-bold text-sm rounded-xl shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
           >
             <span>Proceed to Checkout</span>
             <ArrowRight className="w-4 h-4" />
