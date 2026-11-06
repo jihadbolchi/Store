@@ -34,7 +34,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       role="button"
       tabIndex={0}
       aria-label={`View ${product.name}`}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); viewProductDetail(product); } }}
+      onKeyDown={(e) => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); viewProductDetail(product); } }}
       className="group relative bg-white border border-stone-200 rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B6A75] flex flex-col cursor-pointer"
     >
       {/* Image Container with Aspect Ratio */}
