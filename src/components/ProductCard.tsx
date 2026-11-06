@@ -17,7 +17,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     ? Math.round(((product.price - product.discountPrice!) / product.price) * 100)
     : 0;
 
-  const [imageFailed, setImageFailed] = useState(false);\n  const primaryImage = product.images.find((image) => typeof image === 'string' && image.trim().length > 0);
+  const [imageFailed, setImageFailed] = useState(false);
+  const primaryImage = product.images.find((image) => typeof image === 'string' && image.trim().length > 0);
 
   const handleWhatsAppQuickInquiry = (e: React.MouseEvent) => {
     e.stopPropagation();
