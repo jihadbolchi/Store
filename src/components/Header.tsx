@@ -54,8 +54,8 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-stone-200/80 shadow-2xs transition-all">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
+    <header className="sticky top-0 z-40 bg-[#fcfbf8]/95 backdrop-blur-xl border-b border-[#e9e7e1] transition-colors">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-[66px] sm:h-[78px] flex items-center justify-between gap-2 sm:gap-4">
         {/* 1. Official Logo & Brand Name */}
         <button
           onClick={() => handleNavClick('home')}
@@ -64,9 +64,9 @@ export const Header: React.FC = () => {
           <img
             src="/assets/aistudio/IMG-20261105-WA0000_cdc70869.jpg"
             alt="Dhaka Art Nook"
-            className="h-9 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs shrink-0"
+            className="h-10 sm:h-12 w-auto object-contain shrink-0"
           />
-          <span className="text-base sm:text-2xl md:text-3xl font-black tracking-tight font-heading whitespace-nowrap block truncate">
+          <span className="text-[15px] sm:text-2xl md:text-[27px] font-bold tracking-[-.035em] font-heading whitespace-nowrap block truncate">
             <span className="text-[#005C6E]">Dhaka</span>{' '}
             <span className="text-[#008C99]">Art</span>{' '}
             <span className="text-[#FFA000]">Nook</span>
