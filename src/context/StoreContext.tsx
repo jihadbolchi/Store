@@ -109,11 +109,8 @@ interface StoreContextType {
   updateOrderStatus: (orderId: string, status: Order['status']) => void;
 
   // Admin Auth & Management
-  isAdminLoggedIn: boolean;
   adminTab: AdminTab;
   setAdminTab: (tab: AdminTab) => void;
-  loginAdmin: (email: string, pass: string) => boolean;
-  logoutAdmin: () => void;
   addProduct: (product: Omit<Product, 'id' | 'createdAt'>) => void;
   updateProduct: (id: string, product: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
@@ -146,7 +143,6 @@ const LS_KEY_PRODUCTS = 'dhaka_art_nook_products_v1';
 const LS_KEY_CATEGORIES = 'dhaka_art_nook_categories_v1';
 const LS_KEY_CART = 'dhaka_art_nook_cart_v1';
 const LS_KEY_ORDERS = 'dhaka_art_nook_orders_v1';
-const LS_KEY_ADMIN_AUTH = 'dhaka_art_nook_admin_auth_v1';
 const LS_KEY_HERO_BANNER = 'dhaka_art_nook_hero_banner_v1';
 
 export const DEFAULT_HERO_BANNER: HeroBannerSettings = {
@@ -252,14 +248,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
   const [lastCompletedOrder, setLastCompletedOrder] = useState<Order | null>(null);
 
-  // Admin Auth & Tab
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(LS_KEY_ADMIN_AUTH) === 'true';
-    } catch {
-      return false;
-    }
-  });
+  // Admin navigation state; authorization is derived only from Firebase Authentication.
   const [adminTab, setAdminTab] = useState<AdminTab>('dashboard');
 
   // Firebase User Authentication state
@@ -320,19 +309,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setCurrentUser(user);
-        localStorage.removeItem('dhaka_art_nook_demo_user');
-      } else {
-        const savedDemo = localStorage.getItem('dhaka_art_nook_demo_user');
-        if (savedDemo) {
-          try {
-            setCurrentUser(JSON.parse(savedDemo));
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      }
+      setCurrentUser(user);
     });
     return () => unsubscribe();
   }, []);
@@ -618,15 +595,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [orders]);
 
-  // Sync admin auth to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(LS_KEY_ADMIN_AUTH, isAdminLoggedIn ? 'true' : 'false');
-    } catch (e) {
-      console.error(e);
-    }
-  }, [isAdminLoggedIn]);
-
   // Toast actions
   const addToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     const id = Math.random().toString(36).substring(2, 9);
@@ -838,27 +806,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     addToast(`Order ${orderId} updated to ${status}.`, 'info');
   };
 
-  // Admin Auth
-  const loginAdmin = (email: string, pass: string): boolean => {
-    // Admin credentials for Dhaka Art Nook store
-    if (
-      (email.toLowerCase() === 'admin@dhakaartnook.com' && pass === 'ArtNook@2026!') ||
-      (email.toLowerCase() === 'admin' && pass === 'admin')
-    ) {
-      setIsAdminLoggedIn(true);
-      addToast('Welcome back, Admin!', 'success');
-      return true;
-    }
-    addToast('Invalid credentials. Use admin@dhakaartnook.com / ArtNook@2026!', 'error');
-    return false;
-  };
-
-  const logoutAdmin = () => {
-    setIsAdminLoggedIn(false);
-    setCurrentView('home');
-    addToast('Logged out of Admin panel.', 'info');
-  };
-
   // Product CRUD with Firestore Persistence
   const addProduct = async (data: Omit<Product, 'id' | 'createdAt'>) => {
     const id = `prod-${Date.now()}`;
@@ -1034,11 +981,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         placeCodOrder,
         updateOrderStatus,
 
-        isAdminLoggedIn,
         adminTab,
         setAdminTab,
-        loginAdmin,
-        logoutAdmin,
         addProduct,
         updateProduct,
         deleteProduct,
