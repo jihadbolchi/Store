@@ -409,7 +409,6 @@ export const AdminView: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
->
           <button
             onClick={resetToDemoData}
             className="px-3.5 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
