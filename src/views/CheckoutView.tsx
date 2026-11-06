@@ -105,7 +105,7 @@ export const CheckoutView: React.FC = () => {
 
   if (cart.length === 0) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center space-y-4">
+      <div className="page-shell max-w-2xl py-20 text-center space-y-5">
         <h2 className="text-2xl font-bold text-stone-900 font-heading">
           Your Cart is Empty
         </h2>
@@ -114,7 +114,7 @@ export const CheckoutView: React.FC = () => {
         </p>
         <button
           onClick={() => navigateTo('shop')}
-          className="px-5 py-2.5 bg-[#0B6A75] text-white text-xs font-semibold rounded-xl"
+          className="px-5 py-2.5 bg-[#006673] text-white text-xs font-semibold rounded-xl"
         >
           Browse Supplies
         </button>
@@ -123,34 +123,34 @@ export const CheckoutView: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="page-shell py-8 sm:py-12 space-y-8">
       {/* Header */}
-      <div className="pb-6 border-b border-stone-200">
+      <div className="pb-6 border-b border-[#e9e7e1]">
         <button
           onClick={() => navigateTo('cart')}
-          className="text-xs font-medium text-[#0B6A75] hover:underline flex items-center gap-1.5 mb-2 cursor-pointer"
+          className="text-xs font-semibold text-[#006673] hover:underline flex items-center gap-1.5 mb-2 cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Cart</span>
         </button>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 font-heading">
-          Checkout &amp; Order Placement
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#202525] font-heading">
+          Checkout
         </h1>
-        <p className="text-xs sm:text-sm text-stone-500 mt-1">
-          Provide your shipping details below to confirm your order via WhatsApp.
+        <p className="text-sm text-[#747b79] mt-2 leading-6">
+          Add your delivery details and review your order before confirming.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         {/* Left Column: Customer Details & Delivery Area Selection Form */}
-        <form className="lg:col-span-7 bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-xs">
+        <form className="lg:col-span-7 bg-white rounded-2xl border border-[#e9e7e1] p-5 sm:p-7 space-y-6 shadow-xs">
           <div className="border-b border-stone-100 pb-4">
             <h2 className="text-lg font-bold text-stone-900 font-heading flex items-center gap-2">
-              <User className="w-5 h-5 text-[#0B6A75]" />
-              <span>Customer Information</span>
+              <User className="w-5 h-5 text-[#006673]" />
+              <span>Delivery Information</span>
             </h2>
             <p className="text-xs text-stone-500 mt-0.5">
-              We require this information for Bangladesh courier dispatch and delivery verification.
+              Used only to process and deliver your order.
             </p>
           </div>
 
@@ -170,7 +170,7 @@ export const CheckoutView: React.FC = () => {
                   setFormErrors((prev) => ({ ...prev, fullName: '' }));
                 }
               }}
-              className={`w-full px-4 py-3 bg-stone-50 border rounded-xl text-xs sm:text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#0B6A75] transition-all ${
+              className={`w-full px-4 py-3 bg-stone-50 border rounded-xl text-xs sm:text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#006673] transition-all ${
                 formErrors.fullName ? 'border-rose-400 bg-rose-50/20' : 'border-stone-300'
               }`}
             />
@@ -205,7 +205,7 @@ export const CheckoutView: React.FC = () => {
                     setPhoneError(check.isValid ? null : check.error || 'Invalid number');
                   }
                 }}
-                className={`w-full pl-10 pr-4 py-3 bg-stone-50 border rounded-xl text-xs sm:text-sm text-stone-900 font-tabular focus:outline-none focus:ring-2 focus:ring-[#0B6A75] transition-all ${
+                className={`w-full pl-10 pr-4 py-3 bg-stone-50 border rounded-xl text-xs sm:text-sm text-stone-900 font-tabular focus:outline-none focus:ring-2 focus:ring-[#006673] transition-all ${
                   phoneError ? 'border-rose-400 bg-rose-50/20' : 'border-stone-300'
                 }`}
               />
@@ -221,15 +221,15 @@ export const CheckoutView: React.FC = () => {
           {/* Delivery Area Selection (Radio Tiles) */}
           <div className="space-y-2 pt-1">
             <label className="text-xs font-bold text-stone-700">
-              Delivery Area (Automatic Delivery Rate) <span className="text-rose-500">*</span>
+              Delivery Area <span className="text-rose-500">*</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Inside Dhaka */}
               <label
                 onClick={() => setDeliveryArea('inside_dhaka')}
-                className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col justify-between ${
+                className={`p-4 rounded-2xl border cursor-pointer transition-all flex flex-col justify-between ${
                   deliveryArea === 'inside_dhaka'
-                    ? 'border-[#0B6A75] bg-teal-50/50 shadow-xs ring-2 ring-[#0B6A75]/10'
+                    ? 'border-[#006673] bg-[#edf5f4] shadow-xs ring-2 ring-[#006673]/10'
                     : 'border-stone-200 hover:border-stone-300 bg-white'
                 }`}
               >
@@ -237,12 +237,12 @@ export const CheckoutView: React.FC = () => {
                   <div className="font-bold text-stone-900 text-xs sm:text-sm">
                     {DELIVERY_CONFIG.insideDhaka.name}
                   </div>
-                  <span className="text-xs font-extrabold text-[#0B6A75] font-tabular">
+                  <span className="text-xs font-extrabold text-[#006673] font-tabular">
                     ৳{DELIVERY_CONFIG.insideDhaka.fee}
                   </span>
                 </div>
                 <div className="text-[11px] text-stone-500 mt-2">
-                  Dhanmondi, Gulshan, Uttara, Mirpur, Old Dhaka (24–48h)
+                  Dhaka Metro · Estimated 24 hours
                 </div>
               </label>
 
@@ -251,7 +251,7 @@ export const CheckoutView: React.FC = () => {
                 onClick={() => setDeliveryArea('outside_dhaka')}
                 className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col justify-between ${
                   deliveryArea === 'outside_dhaka'
-                    ? 'border-[#0B6A75] bg-teal-50/50 shadow-xs ring-2 ring-[#0B6A75]/10'
+                    ? 'border-[#006673] bg-[#edf5f4] shadow-xs ring-2 ring-[#006673]/10'
                     : 'border-stone-200 hover:border-stone-300 bg-white'
                 }`}
               >
@@ -259,12 +259,12 @@ export const CheckoutView: React.FC = () => {
                   <div className="font-bold text-stone-900 text-xs sm:text-sm">
                     {DELIVERY_CONFIG.outsideDhaka.name}
                   </div>
-                  <span className="text-xs font-extrabold text-[#0B6A75] font-tabular">
+                  <span className="text-xs font-extrabold text-[#006673] font-tabular">
                     ৳{DELIVERY_CONFIG.outsideDhaka.fee}
                   </span>
                 </div>
                 <div className="text-[11px] text-stone-500 mt-2">
-                  Chittagong, Sylhet, Rajshahi, Khulna &amp; all 64 districts (2–4 days)
+                  All districts outside Dhaka · Estimated 48 hours
                 </div>
               </label>
             </div>
@@ -288,7 +288,7 @@ export const CheckoutView: React.FC = () => {
                     setFormErrors((prev) => ({ ...prev, address: '' }));
                   }
                 }}
-                className={`w-full pl-10 pr-4 py-3 bg-stone-50 border rounded-xl text-xs sm:text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#0B6A75] transition-all ${
+                className={`w-full pl-10 pr-4 py-3 bg-stone-50 border rounded-xl text-xs sm:text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#006673] transition-all ${
                   formErrors.address ? 'border-rose-400 bg-rose-50/20' : 'border-stone-300'
                 }`}
               />
@@ -311,20 +311,20 @@ export const CheckoutView: React.FC = () => {
             </div>
             <textarea
               rows={2}
-              placeholder="e.g. Call before delivery, need urgent delivery for an exhibition, preferred delivery time"
+              placeholder="Any delivery instructions (optional)"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-4 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs sm:text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#0B6A75] transition-all"
+              className="w-full px-4 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs sm:text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#006673] transition-all"
             />
           </div>
         </form>
 
         {/* Right Column: Live Order Summary & WhatsApp Confirmation Button */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-7 space-y-6 shadow-sm">
+          <div className="bg-white rounded-2xl border border-[#e9e7e1] p-5 sm:p-7 space-y-6 shadow-xs lg:sticky lg:top-28">
             <div className="flex items-center justify-between pb-4 border-b border-stone-100">
               <h3 className="font-bold text-stone-900 text-base font-heading">
-                Order Review
+                Your Order
               </h3>
               <span className="text-xs text-stone-500 font-tabular">
                 {cart.length} unique {cart.length === 1 ? 'item' : 'items'}
@@ -371,7 +371,7 @@ export const CheckoutView: React.FC = () => {
                 <span>
                   Delivery Charge ({deliveryArea === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka'}):
                 </span>
-                <span className="font-bold text-[#0B6A75] font-tabular">
+                <span className="font-bold text-[#006673] font-tabular">
                   {deliveryCharge === 0 ? 'Free' : `৳${deliveryCharge}`}
                 </span>
               </div>
@@ -381,10 +381,10 @@ export const CheckoutView: React.FC = () => {
             <div className="pt-4 border-t-2 border-dashed border-stone-200 flex justify-between items-baseline">
               <div>
                 <span className="font-bold text-stone-900 text-base">Grand Total</span>
-                <div className="text-[11px] text-stone-400">Subtotal + Delivery</div>
+                <div className="text-[11px] text-stone-400">Including delivery</div>
               </div>
               <div className="text-right">
-                <span className="text-3xl font-extrabold text-[#0B6A75] font-tabular">
+                <span className="text-3xl font-extrabold text-[#006673] font-tabular">
                   ৳{grandTotal}
                 </span>
                 <span className="text-xs text-stone-500 block font-normal">BDT</span>
