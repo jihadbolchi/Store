@@ -30,6 +30,10 @@ export const ProductDetailView: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [isZoomed, setIsZoomed] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'specs' | 'delivery'>('details');\n  const [failedImages, setFailedImages] = useState<Set<string>>(() => new Set());
+  const availableImages = useMemo(
+    () => (product?.images || []).filter((image) => typeof image === 'string' && image.trim() && !failedImages.has(image)),
+    [product?.images, failedImages]
+  );
 
   if (!product) {
     return (
@@ -51,10 +55,6 @@ export const ProductDetailView: React.FC = () => {
     ? Math.round(((product.price - product.discountPrice!) / product.price) * 100)
     : 0;
 
-  const availableImages = useMemo(
-    () => product.images.filter((image) => typeof image === 'string' && image.trim() && !failedImages.has(image)),
-    [product.images, failedImages]
-  );
   const currentImage = availableImages[Math.min(selectedImageIndex, Math.max(availableImages.length - 1, 0))] || '';
 
   const relatedProducts = products
