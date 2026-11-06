@@ -310,14 +310,14 @@ export const ProductDetailView: React.FC = () => {
       </div>
 
       {/* Product Specifications & Craft Guidance Tabs */}
-      <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200 p-5 sm:p-8 space-y-5 sm:space-y-6">
-        <div className="flex items-center gap-3 border-b border-stone-200 pb-3">
+      <div className="bg-white rounded-2xl border border-[#e9e7e1] p-5 sm:p-8 space-y-5 sm:space-y-6">
+        <div className="flex items-center gap-3 border-b border-[#e9e7e1] pb-3">
           <button
             onClick={() => setActiveTab('details')}
             className={`pb-2 text-xs sm:text-sm font-bold transition-colors border-b-2 -mb-3.5 cursor-pointer ${
               activeTab === 'details'
-                ? 'border-[#0B6A75] text-[#0B6A75]'
-                : 'border-transparent text-stone-500 hover:text-stone-900'
+                ? 'border-[#006673] text-[#006673]'
+                : 'border-transparent text-[#747b79] hover:text-[#202525]'
             }`}
           >
             Product Overview
@@ -344,19 +344,10 @@ export const ProductDetailView: React.FC = () => {
           </button>
         </div>
 
-        <div className="pt-2 text-xs sm:text-sm text-stone-700 leading-relaxed">
+        <div className="pt-2 text-sm text-[#555e5b] leading-7">
           {activeTab === 'details' && (
             <div className="space-y-4">
               <p>{product.description}</p>
-              <div className="bg-amber-50/60 border border-amber-200/80 p-4 rounded-2xl text-stone-800 space-y-1">
-                <div className="font-bold text-xs uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Artisan Craft Tip</span>
-                </div>
-                <p className="text-xs text-amber-900">
-                  Always store epoxy resins, gouache jars, and seasoned wood blocks away from direct sun exposure and excessive moisture to guarantee maximum shelf-life and performance.
-                </p>
-              </div>
             </div>
           )}
 
@@ -370,21 +361,20 @@ export const ProductDetailView: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <p className="py-3 text-stone-500">Standard craft supply specifications apply.</p>
+                <p className="py-3 text-stone-500">Specifications are not available for this product yet.</p>
               )}
             </div>
           )}
 
           {activeTab === 'delivery' && (
             <div className="space-y-3">
-              <p>
-                All orders are packed with shock-resistant bubble wrap and sealed craft cartons to ensure spill-proof transit of liquid resins, pigment jars, and wooden stamps.
-              </p>
-              <ul className="list-disc pl-5 space-y-1 text-stone-600 text-xs">
-                <li>Dhaka Metro: ৳80 flat courier rate (1–2 days delivery).</li>
-                <li>All other districts in Bangladesh: ৳130 courier rate via Steadfast/Pathao (2–4 business days).</li>
-                <li>Cash on Delivery (COD) supported upon customer phone confirmation.</li>
+              <p>Delivery charges and estimated times are based on your delivery area:</p>
+              <ul className="space-y-2 text-stone-600 text-xs sm:text-sm">
+                <li className="flex justify-between gap-4"><span>{DELIVERY_CONFIG.insideDhaka.name}</span><strong className="text-[#202525]">৳{DELIVERY_CONFIG.insideDhaka.fee} · {DELIVERY_CONFIG.insideDhaka.estimatedDelivery}</strong></li>
+                <li className="flex justify-between gap-4"><span>{DELIVERY_CONFIG.outsideDhaka.name}</span><strong className="text-[#202525]">৳{DELIVERY_CONFIG.outsideDhaka.fee} · {DELIVERY_CONFIG.outsideDhaka.estimatedDelivery}</strong></li>
               </ul>
+              {DELIVERY_CONFIG.freeDeliveryThreshold > 0 && <p className="rounded-xl bg-[#edf5f4] p-3 text-[#006673]">Free delivery on orders of ৳{DELIVERY_CONFIG.freeDeliveryThreshold.toLocaleString('en-BD')} or more.</p>}
+              <p className="text-xs text-stone-500">For order or delivery questions, contact us through the WhatsApp order option.</p>
             </div>
           )}
         </div>
@@ -394,7 +384,7 @@ export const ProductDetailView: React.FC = () => {
       {relatedProducts.length > 0 && (
         <div className="space-y-6 pt-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-bold text-stone-900 font-heading">
+            <h2 className="text-xl sm:text-2xl font-semibold text-[#202525] font-heading">
               More from {product.categoryName}
             </h2>
           </div>
