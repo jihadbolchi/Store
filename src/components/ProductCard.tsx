@@ -31,10 +31,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <div
       onClick={() => viewProductDetail(product)}
-      className="group relative bg-white border border-stone-200/90 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1 flex flex-col cursor-pointer"
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${product.name}`}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); viewProductDetail(product); } }}
+      className="group relative bg-white border border-stone-200 rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B6A75] flex flex-col cursor-pointer"
     >
       {/* Image Container with Aspect Ratio */}
-      <div className="relative aspect-4/3 w-full overflow-hidden bg-stone-100">
+      <div className="relative aspect-square sm:aspect-4/3 w-full overflow-hidden bg-stone-50">
         <img
           src={primaryImage}
           alt={product.name}
@@ -87,7 +91,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </div>
 
       {/* Content Container */}
-      <div className="p-4 flex-1 flex flex-col justify-between">
+      <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
         <div>
           {/* Category kicker */}
           <div className="text-[11px] font-medium tracking-wider uppercase text-stone-500 mb-1">
@@ -95,7 +99,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
 
           {/* Product Title */}
-          <h3 className="text-sm font-semibold text-stone-900 line-clamp-2 leading-snug group-hover:text-[#005C6E] transition-colors">
+          <h3 className="text-[13px] sm:text-sm font-semibold text-stone-900 line-clamp-2 leading-snug group-hover:text-[#005C6E] transition-colors min-h-[2.4rem]">
             {product.name}
           </h3>
         </div>
@@ -104,7 +108,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="mt-3 pt-3 border-t border-stone-100 flex items-center justify-between gap-2">
           <div>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-base font-bold text-stone-900 font-tabular">
+              <span className="text-sm sm:text-base font-bold text-stone-900 font-tabular">
                 ৳{effectivePrice}
               </span>
               {hasDiscount && (
