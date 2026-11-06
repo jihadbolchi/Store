@@ -29,7 +29,8 @@ export const ProductDetailView: React.FC = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isZoomed, setIsZoomed] = useState(false);
-  const [activeTab, setActiveTab] = useState<'details' | 'specs' | 'delivery'>('details');\n  const [failedImages, setFailedImages] = useState<Set<string>>(() => new Set());
+  const [activeTab, setActiveTab] = useState<'details' | 'specs' | 'delivery'>('details');
+  const [failedImages, setFailedImages] = useState<Set<string>>(() => new Set());
   const availableImages = useMemo(
     () => (product?.images || []).filter((image) => typeof image === 'string' && image.trim() && !failedImages.has(image)),
     [product?.images, failedImages]
@@ -69,16 +70,26 @@ export const ProductDetailView: React.FC = () => {
       : currentImage;
 
     const message = encodeURIComponent(
-      `🎨 *DHAKA ART NOOK — DIRECT PRODUCT ORDER*\n` +
-      `━━━━━━━━━━━━━━━━━━━━━\n` +
-      `Product: *${product.name}*\n` +
-      `Quantity: *${quantity}*\n` +
-      `Unit Price: *৳${effectivePrice}*\n` +
-      `Estimated Line Total: *৳${effectivePrice * quantity}*\n` +
-      `Category: ${product.categoryName}\n` +
-      `🔗 Product Link: ${productUrl}\n` +
-      `🖼️ Image Preview: ${directImageUrl}\n` +
-      `━━━━━━━━━━━━━━━━━━━━━\n` +
+      `🎨 *DHAKA ART NOOK — DIRECT PRODUCT ORDER*
+` +
+      `━━━━━━━━━━━━━━━━━━━━━
+` +
+      `Product: *${product.name}*
+` +
+      `Quantity: *${quantity}*
+` +
+      `Unit Price: *৳${effectivePrice}*
+` +
+      `Estimated Line Total: *৳${effectivePrice * quantity}*
+` +
+      `Category: ${product.categoryName}
+` +
+      `🔗 Product Link: ${productUrl}
+` +
+      `🖼️ Image Preview: ${directImageUrl}
+` +
+      `━━━━━━━━━━━━━━━━━━━━━
+` +
       `Hello! I'd like to order this item directly. Please confirm stock and delivery to my address.`
     );
 
