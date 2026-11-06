@@ -63,22 +63,6 @@ export default function App() {
         {/* Firebase User Authentication Modal */}
         <AuthModal />
 
-        {/* Real-time Customer Live Chat connected to Firestore */}
-        <LiveChatWidget />
-
-        {/* Floating WhatsApp Quick Action on Mobile / Small screens */}
-        <div className="fixed bottom-5 left-5 z-40 sm:hidden">
-          <a
-            href={DELIVERY_CONFIG.whatsapp.waUrlBase}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Order on WhatsApp"
-            className="w-12 h-12 rounded-full bg-[#25D366] text-white shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
-          >
-            <MessageCircle className="w-6 h-6 fill-white text-[#25D366]" />
-          </a>
-        </div>
-
         {/* Footer */}
         <Footer />
       </div>
