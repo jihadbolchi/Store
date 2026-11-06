@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Product } from '../types';
 import { useStore } from '../context/StoreContext';
 import { ShoppingBag, Eye, MessageCircle } from 'lucide-react';
@@ -17,8 +17,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     ? Math.round(((product.price - product.discountPrice!) / product.price) * 100)
     : 0;
 
-  const primaryImage =
-    product.images[0] || '/src/assets/images/hero_art_craft_workspace_1793820211229.jpg';
+  const [imageFailed, setImageFailed] = useState(false);\n  const primaryImage = product.images.find((image) => typeof image === 'string' && image.trim().length > 0);
 
   const handleWhatsAppQuickInquiry = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -39,13 +38,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     >
       {/* Image Container with Aspect Ratio */}
       <div className="relative aspect-square sm:aspect-4/3 w-full overflow-hidden bg-stone-50">
-        <img
-          src={primaryImage}
-          alt={product.name}
-          loading="lazy"
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        {primaryImage && !imageFailed ? (
+          <img src={primaryImage} alt={product.name} loading="lazy" referrerPolicy="no-referrer"
+            onError={() => setImageFailed(true)}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        ) : (
+          <div className="product-image-fallback"><div className="text-center px-3"><span className="block text-2xl mb-2">✳</span><span className="text-xs font-medium">Image unavailable</span></div></div>
+        )}
 
         {/* Subtle Tag Overlay (Max 1 subtle tag per design constitution) */}
         <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start">
