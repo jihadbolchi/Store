@@ -9,7 +9,6 @@ import {
   ToastMessage,
   DeliveryArea,
   HeroBannerSettings,
-  ChatMessage,
 } from '../types';
 import { INITIAL_CATEGORIES, INITIAL_PRODUCTS } from '../data/initialData';
 import { DELIVERY_CONFIG } from '../config/delivery';
@@ -38,8 +37,6 @@ import {
   updateDoc,
   deleteDoc,
   onSnapshot,
-  query,
-  orderBy,
 } from 'firebase/firestore';
 
 export type AppView =
@@ -129,11 +126,7 @@ interface StoreContextType {
   updateHeroBanner: (settings: Partial<HeroBannerSettings>) => Promise<void>;
   resetHeroBanner: () => void;
 
-  // Live Customer Chat & Database Synchronization
-  chatMessages: ChatMessage[];
-  isChatOpen: boolean;
-  setIsChatOpen: (open: boolean) => void;
-  sendChatMessage: (text: string, senderName?: string) => Promise<void>;
+  // Firebase synchronization status
   isFirebaseSyncing: boolean;
 }
 
@@ -299,9 +292,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Live Customer Support Chat state
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [isFirebaseSyncing, setIsFirebaseSyncing] = useState<boolean>(true);
 
   // Toast System state
@@ -525,39 +515,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => unsub();
   }, []);
 
-  // 4. Live Firestore Sync: Orders
+  // 4. Live Firestore Sync: Orders (admin only)
   useEffect(() => {
-    const unsub = onSnapshot(
-      collection(db, 'orders'),
-      (snapshot) => {
-        if (!snapshot.empty) {
-          const liveOrders = snapshot.docs.map((d) => d.data() as Order);
-          liveOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-          setOrders(liveOrders);
-        }
-      },
-      (error) => {
-        handleFirestoreError(error, OperationType.GET, 'orders');
-      }
-    );
+    if (!isUserAdmin) {
+      setOrders([]);
+      return;
+    }
+    const unsub = onSnapshot(collection(db, 'orders'), (snapshot) => {
+      const liveOrders = snapshot.docs.map((d) => d.data() as Order);
+      liveOrders.sort((x, y) => new Date(y.createdAt).getTime() - new Date(x.createdAt).getTime());
+      setOrders(liveOrders);
+    }, (error) => handleFirestoreError(error, OperationType.GET, 'orders'));
     return () => unsub();
-  }, []);
-
-  // 5. Live Firestore Sync: Chats
-  useEffect(() => {
-    const q = query(collection(db, 'chats'), orderBy('createdAt', 'asc'));
-    const unsub = onSnapshot(
-      q,
-      (snapshot) => {
-        const liveChats = snapshot.docs.map((d) => d.data() as ChatMessage);
-        setChatMessages(liveChats);
-      },
-      (error) => {
-        handleFirestoreError(error, OperationType.GET, 'chats');
-      }
-    );
-    return () => unsub();
-  }, []);
+  }, [isUserAdmin]);
 
   // Sync products to localStorage
   useEffect(() => {
@@ -890,28 +860,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Live Customer Chat Message Dispatcher
-  const sendChatMessage = async (text: string, senderName?: string) => {
-    if (!text.trim()) return;
-    const msgId = `chat-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-    const msg: ChatMessage = {
-      id: msgId,
-      senderId: currentUser?.uid || 'guest-visitor',
-      senderName: senderName || currentUser?.displayName || (isUserAdmin ? 'Dhaka Art Nook Support' : 'Customer'),
-      senderEmail: currentUser?.email || undefined,
-      text: text.trim(),
-      isAdmin: Boolean(isUserAdmin),
-      createdAt: new Date().toISOString(),
-    };
-    setChatMessages((prev) => [...prev, msg]);
-
-    try {
-      await setDoc(doc(db, 'chats', msgId), msg);
-    } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, `chats/${msgId}`);
-    }
-  };
-
   // Reset demo data to Firestore & Local
   const resetToDemoData = async () => {
     setProducts(INITIAL_PRODUCTS);
@@ -998,11 +946,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         heroBanner,
         updateHeroBanner,
         resetHeroBanner,
-
-        chatMessages,
-        isChatOpen,
-        setIsChatOpen,
-        sendChatMessage,
         isFirebaseSyncing,
       }}
     >
