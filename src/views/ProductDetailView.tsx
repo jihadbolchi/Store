@@ -124,7 +124,7 @@ export const ProductDetailView: React.FC = () => {
         <div className="lg:col-span-7 space-y-4">
           <div
             onClick={() => setIsZoomed(!isZoomed)}
-            className={`relative rounded-3xl overflow-hidden border border-stone-200 bg-stone-100 aspect-4/3 cursor-zoom-in group transition-all ${
+            className={`relative rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200 bg-stone-50 aspect-square sm:aspect-4/3 cursor-zoom-in group transition-all ${
               isZoomed ? 'scale-105 shadow-2xl z-20' : 'shadow-xs'
             }`}
           >
@@ -225,7 +225,7 @@ export const ProductDetailView: React.FC = () => {
           <div className="space-y-3 pt-2">
             <div className="flex flex-wrap items-center gap-3">
               <label htmlFor="pdp-quantity" className="text-xs font-semibold text-stone-700">Quantity:</label>
-              <div id="pdp-quantity" className="flex items-center border border-stone-200 rounded-xl bg-stone-50 p-1">
+              <div id="pdp-quantity" role="group" aria-label="Select quantity" className="flex items-center border border-stone-200 rounded-xl bg-white p-1 shadow-xs">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="w-8 h-8 flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white rounded-lg transition-colors cursor-pointer"
