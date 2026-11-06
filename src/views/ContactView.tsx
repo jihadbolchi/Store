@@ -39,31 +39,31 @@ export const ContactView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+    <div className="page-shell py-10 sm:py-14 space-y-10 sm:space-y-12">
       {/* Heading */}
       <div className="max-w-2xl space-y-2">
-        <div className="text-xs font-bold uppercase tracking-wider text-[#0B6A75]">
+        <div className="text-xs font-bold uppercase tracking-wider text-[#006673]">
           Get in Touch
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-stone-900 font-heading">
-          We're Here for Your Creative Inquiries
+          How can we help?
         </h1>
         <p className="text-sm text-stone-600">
-          Have a question about resin cure times, custom block print sizes, or wholesale workshop packages? Chat with our Dhaka support team.
+          Questions about a product, your order or delivery? Send us a message and we will be happy to help.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Direct Inquiries Form */}
-        <div className="lg:col-span-7 bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-xs">
+        <div className="lg:col-span-7 bg-white rounded-2xl border border-[#e9e7e1] p-5 sm:p-7 space-y-6 shadow-xs">
           <h2 className="text-lg font-bold text-stone-900 font-heading flex items-center gap-2">
             <MessageCircle className="w-5 h-5 text-[#25D366]" />
-            <span>Send Direct Message to WhatsApp</span>
+            <span>Send us a message</span>
           </h2>
 
           <form onSubmit={handleInquirySubmit} className="space-y-4 text-xs">
             <div className="space-y-1">
-              <label className="font-bold text-stone-700">Your Full Name *</label>
+              <label className="font-bold text-stone-700">Name *</label>
               <input
                 type="text"
                 required
@@ -86,13 +86,13 @@ export const ContactView: React.FC = () => {
             </div>
 
             <div className="space-y-1">
-              <label className="font-bold text-stone-700">Your Inquiry / Question *</label>
+              <label className="font-bold text-stone-700">How can we help? *</label>
               <textarea
                 required
                 rows={4}
                 value={inquiryMessage}
                 onChange={(e) => setInquiryMessage(e.target.value)}
-                placeholder="Ask about product availability, craft advice, bulk orders, or shipping timeline..."
+                placeholder="Write your question here..."
                 className="w-full px-4 py-2.5 bg-stone-50 border border-stone-300 rounded-xl"
               />
             </div>
@@ -102,14 +102,14 @@ export const ContactView: React.FC = () => {
               className="w-full py-3.5 px-6 bg-[#25D366] hover:bg-[#20ba59] active:scale-[0.99] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               <MessageCircle className="w-4 h-4" />
-              <span>Send via WhatsApp (01626523338)</span>
+              <span>Continue to WhatsApp</span>
             </button>
           </form>
         </div>
 
         {/* Right Column: Contact Details & Delivery FAQ */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white rounded-3xl border border-stone-200 p-6 space-y-4 shadow-xs">
+          <div className="bg-white rounded-2xl border border-[#e9e7e1] p-5 sm:p-6 space-y-4 shadow-xs">
             <h3 className="font-bold text-stone-900 text-sm font-heading">
               Store Information
             </h3>
@@ -124,7 +124,7 @@ export const ContactView: React.FC = () => {
               </div>
               <div className="flex items-center gap-3">
                 <Clock className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Business Hours: 10:00 AM – 10:00 PM (Daily)</span>
+                <span>Message us for assistance</span>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-stone-400 shrink-0" />
@@ -161,15 +161,15 @@ export const ContactView: React.FC = () => {
               <span>Delivery Charges FAQ</span>
             </div>
             <p className="text-[11px] text-stone-500">
-              We deliver to every corner of Bangladesh via Steadfast Courier and Pathao Express.
+              Delivery is available in Dhaka and across Bangladesh.
             </p>
             <div className="space-y-1.5 pt-1">
               <div className="flex justify-between py-1 border-b border-stone-200">
-                <span className="font-medium">Inside Dhaka City:</span>
+                <span className="font-medium">Inside Dhaka:</span>
                 <span className="font-bold font-tabular text-[#0B6A75]">৳80 flat rate (24h)</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="font-medium">Outside Dhaka (All 64 districts):</span>
+                <span className="font-medium">Outside Dhaka:</span>
                 <span className="font-bold font-tabular text-[#0B6A75]">৳130 flat rate (48–72h)</span>
               </div>
             </div>
