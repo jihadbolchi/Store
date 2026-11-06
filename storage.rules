@@ -25,10 +25,9 @@ service firebase.storage {
       allow write: if isAdmin();
     }
 
-    // User profile or uploaded assets: Authenticated owner or Admin
+    // User profile or uploaded assets: private to the authenticated owner or Admin
     match /users/{userId}/{allPaths=**} {
-      allow read: if true;
-      allow write: if (isAuthenticated() && request.auth.uid == userId) || isAdmin();
+      allow read, write: if (isAuthenticated() && request.auth.uid == userId) || isAdmin();
     }
 
     // Default deny for everything else
