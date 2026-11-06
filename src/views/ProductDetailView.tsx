@@ -85,7 +85,7 @@ export const ProductDetailView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-12">
+    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-8 sm:space-y-12">
       {/* Breadcrumb Navigation */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-stone-500">
         <button
@@ -119,7 +119,7 @@ export const ProductDetailView: React.FC = () => {
       </nav>
 
       {/* Main Contiguous Purchase Layout (2-Column Grid) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-start">
         {/* Left Column: Image Gallery with Interactive Zoom */}
         <div className="lg:col-span-7 space-y-4">
           <div
@@ -169,23 +169,23 @@ export const ProductDetailView: React.FC = () => {
         </div>
 
         {/* Right Column: Contiguous Purchase Module */}
-        <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-3xl border border-stone-200/90 shadow-sm space-y-6">
+        <div className="lg:col-span-5 bg-white p-5 sm:p-7 lg:p-8 rounded-2xl sm:rounded-3xl border border-stone-200 shadow-sm space-y-5 sm:space-y-6">
           <div>
-            <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-[#0B6A75] mb-1">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-[#0B6A75] mb-2">
               <span>{product.categoryName}</span>
               {product.craftType && <span className="text-stone-400">· {product.craftType}</span>}
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-bold text-stone-900 font-heading leading-snug">
+            <h1 className="text-2xl sm:text-3xl font-bold text-stone-900 font-heading leading-tight tracking-tight">
               {product.name}
             </h1>
           </div>
 
           {/* Price & Stock Indicator */}
-          <div className="flex items-center justify-between pb-4 border-b border-stone-100">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 pb-5 border-b border-stone-100">
             <div>
               <div className="flex items-baseline gap-2.5">
-                <span className="text-3xl font-extrabold text-stone-900 font-tabular">
+                <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900 font-tabular">
                   ৳{effectivePrice}
                 </span>
                 {hasDiscount && (
@@ -202,11 +202,11 @@ export const ProductDetailView: React.FC = () => {
               <div className="text-xs text-stone-500 mt-1">Inclusive of all local VAT / taxes</div>
             </div>
 
-            <div className="text-right">
+            <div className="text-left sm:text-right">
               {product.inStock ? (
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>{product.stock} Units In Stock</span>
+                  <span>{product.stock} in stock</span>
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-lg">
@@ -217,13 +217,13 @@ export const ProductDetailView: React.FC = () => {
           </div>
 
           {/* Quick Description */}
-          <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+          <p className="text-sm sm:text-[15px] text-stone-600 leading-7">
             {product.description}
           </p>
 
           {/* Quantity Selector & Action Buttons */}
           <div className="space-y-3 pt-2">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <label htmlFor="pdp-quantity" className="text-xs font-semibold text-stone-700">Quantity:</label>
               <div id="pdp-quantity" className="flex items-center border border-stone-200 rounded-xl bg-stone-50 p-1">
                 <button
@@ -249,7 +249,7 @@ export const ProductDetailView: React.FC = () => {
             </div>
 
             {/* Primary Action Buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div className="grid grid-cols-1 gap-2.5 pt-2">
               <button
                 disabled={!product.inStock}
                 onClick={() => addToCart(product, quantity, true)}
@@ -268,7 +268,7 @@ export const ProductDetailView: React.FC = () => {
                 onClick={handleInstantWhatsApp}
                 className={`w-full py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer ${
                   product.inStock
-                    ? 'bg-[#25D366] hover:bg-[#20ba59] text-white active:scale-95'
+                    ? 'border border-[#0B6A75]/25 bg-white hover:bg-teal-50 text-[#0B6A75] active:scale-[0.99]'
                     : 'bg-stone-200 text-stone-400 cursor-not-allowed'
                 }`}
               >
@@ -279,7 +279,7 @@ export const ProductDetailView: React.FC = () => {
           </div>
 
           {/* Delivery & Trust Strip Inside Module */}
-          <div className="bg-stone-50 rounded-2xl p-4 border border-stone-200/80 space-y-2.5 text-xs text-stone-600">
+          <div className="bg-stone-50/80 rounded-xl p-4 border border-stone-200 space-y-3 text-xs sm:text-sm text-stone-600">
             <div className="flex items-center gap-2.5">
               <Truck className="w-4 h-4 text-[#0B6A75] shrink-0" />
               <span>
@@ -295,7 +295,7 @@ export const ProductDetailView: React.FC = () => {
       </div>
 
       {/* Product Specifications & Craft Guidance Tabs */}
-      <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-8 space-y-6">
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200 p-5 sm:p-8 space-y-5 sm:space-y-6">
         <div className="flex items-center gap-3 border-b border-stone-200 pb-3">
           <button
             onClick={() => setActiveTab('details')}
