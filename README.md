@@ -69,10 +69,8 @@ When the customer clicks **"Confirm Order on WhatsApp"**, the application genera
 
 ## 🔐 4. Admin Panel (`/admin`)
 
-- **Secure Login:** Protected route with authentication guard.
-  - **Email:** `admin@dhakaartnook.com`
-  - **Password:** `ArtNook@2026!`
-  - *(Convenient 1-click test button is provided on the login form)*
+- **Authentication:** Admin access must use Firebase Authentication with a verified account. Authorization is enforced by Firebase Security Rules; client-side state or local storage is not an authorization mechanism.
+- **Credentials:** No admin passwords or demo credentials are stored in this repository. Configure the authorized administrator identity and Firebase Authentication account outside source control. Rotate any credentials that were previously exposed in repository history or deployed client bundles.
 - **Dashboard:**
   - Real-time inventory metrics (Total products, categories, stock valuation).
   - Out of stock warnings and low inventory alerts.
