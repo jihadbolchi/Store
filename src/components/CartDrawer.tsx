@@ -86,10 +86,10 @@ export const CartDrawer: React.FC = () => {
                 return (
                   <div key={item.product.id} className="py-4 flex gap-3.5 items-center">
                     <img
-                      src={item.product.images[0] || '/assets/images/product-placeholder.webp'}
+                      src={item.product.images[0] || ''}
                       alt={item.product.name}
                       loading="lazy"
-                      onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = '/assets/images/product-placeholder.webp'; }}
+                      onError={(event) => { event.currentTarget.style.display = 'none'; }}
                       referrerPolicy="no-referrer"
                       className="w-16 h-16 object-cover rounded-xl border border-stone-200 shrink-0 bg-stone-50"
                     />
