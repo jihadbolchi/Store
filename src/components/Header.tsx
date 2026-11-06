@@ -67,7 +67,7 @@ export const Header: React.FC = () => {
             className="h-10 sm:h-12 w-auto object-contain shrink-0"
           />
           <span className="text-[15px] sm:text-2xl md:text-[27px] font-bold tracking-[-.035em] font-heading whitespace-nowrap block truncate">
-            <span className="text-[#005C6E]">Dhaka</span>{' '}
+            <span className="text-[#006673]">Dhaka</span>{' '}
             <span className="text-[#006673]">Art</span>{' '}
             <span className="text-[#FFA000]">Nook</span>
           </span>
@@ -79,7 +79,7 @@ export const Header: React.FC = () => {
           <button
             onClick={() => navigateTo('shop')}
             aria-label="Search art supplies"
-            className="p-2 text-stone-600 hover:text-[#005C6E] hover:bg-stone-100/80 rounded-xl transition-colors cursor-pointer"
+            className="p-2 text-stone-600 hover:text-[#006673] hover:bg-[#edf5f4] rounded-xl transition-colors cursor-pointer"
           >
             <Search className="w-5 h-5" />
           </button>
@@ -134,8 +134,8 @@ export const Header: React.FC = () => {
                 <div className="py-1 space-y-0.5 text-xs font-medium">
                   <button
                     onClick={() => handleNavClick('home')}
-                    className={`w-full px-3 py-2 text-left rounded-xl hover:bg-stone-50 hover:text-[#005C6E] transition-colors cursor-pointer flex items-center justify-between ${
-                      currentView === 'home' ? 'text-[#005C6E] font-bold bg-teal-50/50' : ''
+                    className={`w-full px-3 py-2 text-left rounded-xl hover:bg-[#f7f8f5] hover:text-[#006673] transition-colors cursor-pointer flex items-center justify-between ${
+                      currentView === 'home' ? 'text-[#005C6E] font-bold bg-[#edf5f4]' : ''
                     }`}
                   >
                     <span>Home</span>
@@ -244,7 +244,7 @@ export const Header: React.FC = () => {
                         setIsAuthModalOpen(true);
                         setPanelOpen(false);
                       }}
-                      className="w-full py-2.5 px-3 bg-[#005C6E] hover:bg-[#004b5a] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+                      className="w-full py-2.5 px-3 bg-[#006673] hover:bg-[#00545f] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
                     >
                       <LogIn className="w-3.5 h-3.5" />
                       <span>Log In / Sign Up</span>
