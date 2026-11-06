@@ -40,7 +40,7 @@ export const HomeView: React.FC = () => {
               </div>
             </div>
             <div className="relative h-[260px] sm:h-[340px] lg:h-full lg:min-h-[500px]">
-              <img src={heroBanner.imageUrl || heroImage} alt="A curated creative workspace with art and craft materials" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover" onError={(e) => { e.currentTarget.src = heroImage; }}/>
+              <img src={heroBanner.imageUrl || heroImage} alt="A curated creative workspace with art and craft materials" fetchPriority="high" decoding="async" className="absolute inset-0 h-full w-full object-cover" onError={(e) => { if (e.currentTarget.src !== heroImage) e.currentTarget.src = heroImage; else e.currentTarget.style.display = 'none'; }}/>
               <div className="absolute inset-0 bg-gradient-to-t from-[#f2f0e9]/25 via-transparent to-transparent lg:bg-gradient-to-r lg:from-[#f2f0e9] lg:via-[#f2f0e9]/10 lg:to-transparent"/>
             </div>
             <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full border border-[#e6c47d]/40 pointer-events-none"/>
