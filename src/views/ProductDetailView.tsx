@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from '../components/ProductCard';
 import { DELIVERY_CONFIG } from '../config/delivery';
@@ -29,7 +29,7 @@ export const ProductDetailView: React.FC = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isZoomed, setIsZoomed] = useState(false);
-  const [activeTab, setActiveTab] = useState<'details' | 'specs' | 'delivery'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'specs' | 'delivery'>('details');\n  const [failedImages, setFailedImages] = useState<Set<string>>(() => new Set());
 
   if (!product) {
     return (
@@ -51,10 +51,11 @@ export const ProductDetailView: React.FC = () => {
     ? Math.round(((product.price - product.discountPrice!) / product.price) * 100)
     : 0;
 
-  const currentImage =
-    product.images[selectedImageIndex] ||
-    product.images[0] ||
-    '/src/assets/images/hero_art_craft_workspace_1793820211229.jpg';
+  const availableImages = useMemo(
+    () => product.images.filter((image) => typeof image === 'string' && image.trim() && !failedImages.has(image)),
+    [product.images, failedImages]
+  );
+  const currentImage = availableImages[Math.min(selectedImageIndex, Math.max(availableImages.length - 1, 0))] || '';
 
   const relatedProducts = products
     .filter((p) => p.categoryId === product.categoryId && p.id !== product.id)
@@ -123,23 +124,26 @@ export const ProductDetailView: React.FC = () => {
         {/* Left Column: Image Gallery with Interactive Zoom */}
         <div className="lg:col-span-7 space-y-4">
           <div
-            onClick={() => setIsZoomed(!isZoomed)}
-            className={`relative rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200 bg-stone-50 aspect-square sm:aspect-4/3 cursor-zoom-in group transition-all ${
-              isZoomed ? 'scale-105 shadow-2xl z-20' : 'shadow-xs'
+            onClick={() => currentImage && setIsZoomed(!isZoomed)}
+            role={currentImage ? "button" : undefined}
+            tabIndex={currentImage ? 0 : undefined}
+            onKeyDown={(event) => { if (currentImage && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); setIsZoomed(!isZoomed); } }}
+            className={`relative rounded-2xl sm:rounded-3xl overflow-hidden border border-[#e9e7e1] bg-white aspect-square sm:aspect-4/3 group transition-all ${
+              isZoomed ? 'shadow-xl' : ''
             }`}
           >
-            <img
-              src={currentImage}
-              alt={product.name}
-              referrerPolicy="no-referrer"
-              className={`w-full h-full object-cover transition-transform duration-300 ${
-                isZoomed ? 'scale-125' : 'group-hover:scale-102'
-              }`}
-            />
-            <div className="absolute bottom-3 right-3 bg-stone-900/70 backdrop-blur-xs text-white text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1.5 pointer-events-none">
-              <ZoomIn className="w-3.5 h-3.5" />
-              <span>{isZoomed ? 'Click to reset' : 'Click to zoom'}</span>
-            </div>
+            {currentImage ? (
+              <>
+                <img src={currentImage} alt={product.name} referrerPolicy="no-referrer"
+                  onError={() => { setFailedImages((previous) => new Set(previous).add(currentImage)); setSelectedImageIndex(0); setIsZoomed(false); }}
+                  className={`w-full h-full object-contain p-3 sm:p-5 transition-transform duration-300 ${isZoomed ? 'scale-125 cursor-zoom-out' : 'cursor-zoom-in'}`} />
+                <div className="absolute bottom-3 right-3 bg-[#202525]/75 text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5 pointer-events-none">
+                  <ZoomIn className="w-3.5 h-3.5" /><span>{isZoomed ? 'Tap to reset' : 'Tap to zoom'}</span>
+                </div>
+              </>
+            ) : (
+              <div className="product-image-fallback"><div className="text-center px-4"><span className="block text-3xl mb-2">✳</span><span className="text-sm font-medium">Product image coming soon</span></div></div>
+            )}
 
             {product.badge && (
               <div className="absolute top-4 left-4 bg-stone-900 text-white text-xs font-semibold px-2.5 py-1 rounded-lg shadow-xs">
@@ -149,9 +153,9 @@ export const ProductDetailView: React.FC = () => {
           </div>
 
           {/* Thumbnails */}
-          {product.images.length > 1 && (
+          {availableImages.length > 1 && (
             <div className="flex items-center gap-3 overflow-x-auto pb-1">
-              {product.images.map((img, idx) => (
+              {availableImages.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSelectedImageIndex(idx)}
@@ -161,7 +165,7 @@ export const ProductDetailView: React.FC = () => {
                       : 'border-stone-200 hover:border-stone-400 opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={img} alt={`Product view ${idx + 1}`} loading="lazy" onError={() => setFailedImages((previous) => new Set(previous).add(img))} className="w-full h-full object-contain bg-white p-1" />
                 </button>
               ))}
             </div>
