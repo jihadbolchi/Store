@@ -37,22 +37,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Orders: public creation, admin management, customer access
+    // Orders: guest checkout may create orders; only verified admin can read/manage them.
+    // Keep public creation for the current guest checkout flow; add server-side validation
+    // and abuse protection before changing this contract.
     match /orders/{orderId} {
       allow create: if true;
-      allow read: if isAdmin() || (isAuthenticated() && resource.data.customer.phone == request.auth.token.phone_number);
-      allow update, delete: if isAdmin();
-    }
-
-    // Customer support live chat & inquiry messages: public create & read, admin moderate
-    match /chats/{chatId} {
-      allow read, create: if true;
-      allow update, delete: if isAdmin();
-    }
-
-    // Users collection: user owns their record, admin has access
-    match /users/{userId} {
-      allow read, write: if (isAuthenticated() && request.auth.uid == userId) || isAdmin();
+      allow read, update, delete: if isAdmin();
     }
 
     // Default deny all other paths
