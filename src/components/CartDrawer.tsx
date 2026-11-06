@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
 import {
   X,
@@ -21,26 +21,30 @@ export const CartDrawer: React.FC = () => {
     navigateTo,
   } = useStore();
 
+  useEffect(() => {
+    if (!isCartDrawerOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') setIsCartDrawerOpen(false); };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [isCartDrawerOpen, setIsCartDrawerOpen]);
+
   if (!isCartDrawerOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop overlay */}
-      <div
-        onClick={() => setIsCartDrawerOpen(false)}
-        className="absolute inset-0 bg-stone-900/50 backdrop-blur-xs transition-opacity duration-300"
-      />
+      <button type="button" aria-label="Close shopping bag" onClick={() => setIsCartDrawerOpen(false)} className="absolute inset-0 bg-stone-900/45 backdrop-blur-[2px] transition-opacity duration-300 cursor-default" />
 
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-4 sm:pl-10">
+        <section role="dialog" aria-modal="true" aria-labelledby="cart-drawer-title" className="w-screen max-w-md bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out">
           {/* Drawer Header */}
           <div className="p-4 sm:p-5 border-b border-stone-200 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-teal-50 border border-teal-200 flex items-center justify-center text-[#005C6E]">
+              <div className="w-8 h-8 rounded-lg bg-teal-50 border border-teal-200 flex items-center justify-center text-[#006673]">
                 <ShoppingBag className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="font-bold text-stone-900 font-heading text-base">Shopping Bag</h3>
+                <h3 id="cart-drawer-title" className="font-semibold text-[#202525] font-heading text-base">Your bag</h3>
                 <span className="text-xs text-stone-500 font-tabular">
                   {cartCount} {cartCount === 1 ? 'item' : 'items'}
                 </span>
@@ -64,14 +68,14 @@ export const CartDrawer: React.FC = () => {
                 </div>
                 <h4 className="font-semibold text-stone-800 text-base mb-1">Your bag is empty</h4>
                 <p className="text-xs text-stone-500 mb-6 max-w-xs">
-                  Discover handcrafted wood blocks, crystal resin, artist paints, and natural wax.
+                  Your next creative project starts here.
                 </p>
                 <button
                   onClick={() => {
                     setIsCartDrawerOpen(false);
                     navigateTo('shop');
                   }}
-                  className="px-5 py-2.5 text-xs font-semibold text-white bg-[#005C6E] hover:bg-[#004b5a] rounded-xl transition-colors shadow-xs cursor-pointer"
+                  className="px-5 py-2.5 text-xs font-semibold text-white bg-[#006673] hover:bg-[#00545f] rounded-xl transition-colors shadow-xs cursor-pointer"
                 >
                   Start Shopping
                 </button>
@@ -82,8 +86,10 @@ export const CartDrawer: React.FC = () => {
                 return (
                   <div key={item.product.id} className="py-4 flex gap-3.5 items-center">
                     <img
-                      src={item.product.images[0] || '/src/assets/images/hero_art_craft_workspace_1793820211229.jpg'}
+                      src={item.product.images[0] || '/assets/images/product-placeholder.webp'}
                       alt={item.product.name}
+                      loading="lazy"
+                      onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = '/assets/images/product-placeholder.webp'; }}
                       referrerPolicy="no-referrer"
                       className="w-16 h-16 object-cover rounded-xl border border-stone-200 shrink-0 bg-stone-50"
                     />
@@ -94,7 +100,8 @@ export const CartDrawer: React.FC = () => {
                         </h4>
                         <button
                           onClick={() => removeFromCart(item.product.id)}
-                          className="text-stone-400 hover:text-rose-600 p-0.5 transition-colors cursor-pointer shrink-0"
+                          className="text-stone-400 hover:text-rose-600 p-1 transition-colors cursor-pointer shrink-0"
+                          aria-label={`Remove ${item.product.name} from cart`}
                           title="Remove item"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -108,7 +115,7 @@ export const CartDrawer: React.FC = () => {
                         <div className="flex items-center border border-stone-200 rounded-lg bg-stone-50 p-0.5">
                           <button
                             onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)}
-                            className="w-5 h-5 flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white rounded transition-colors cursor-pointer"
+                            aria-label={`Decrease quantity of ${item.product.name}`} className="w-7 h-7 flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white rounded-lg transition-colors cursor-pointer"
                           >
                             <Minus className="w-2.5 h-2.5" />
                           </button>
@@ -118,7 +125,7 @@ export const CartDrawer: React.FC = () => {
                           <button
                             onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)}
                             disabled={item.quantity >= item.product.stock}
-                            className="w-5 h-5 flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white rounded transition-colors cursor-pointer disabled:opacity-30"
+                            aria-label={`Increase quantity of ${item.product.name}`} className="w-7 h-7 flex items-center justify-center text-stone-600 hover:text-stone-900 hover:bg-white rounded-lg transition-colors cursor-pointer disabled:opacity-30"
                           >
                             <Plus className="w-2.5 h-2.5" />
                           </button>
@@ -172,7 +179,7 @@ export const CartDrawer: React.FC = () => {
               </div>
             </div>
           )}
-        </div>
+        </section>
       </div>
     </div>
   );
