@@ -68,7 +68,7 @@ export const Header: React.FC = () => {
           />
           <span className="text-[15px] sm:text-2xl md:text-[27px] font-bold tracking-[-.035em] font-heading whitespace-nowrap block truncate">
             <span className="text-[#005C6E]">Dhaka</span>{' '}
-            <span className="text-[#008C99]">Art</span>{' '}
+            <span className="text-[#006673]">Art</span>{' '}
             <span className="text-[#FFA000]">Nook</span>
           </span>
         </button>
