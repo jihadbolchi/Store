@@ -1,194 +1,86 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from '../components/ProductCard';
-import { ArrowRight, Tag } from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 
 export const HomeView: React.FC = () => {
-  const { products, categories, navigateTo, heroBanner } = useStore();
-
-  // Category filter state specifically for the "All Products" section on the homepage
-  const [selectedHomeCategory, setSelectedHomeCategory] = useState<string>('all');
-
-  // 1. New Arrivals: exactly 4 products
+  const { products, categories, navigateTo, heroBanner, setActiveCategoryFilter } = useStore();
+  const [selectedHomeCategory, setSelectedHomeCategory] = useState('all');
   const newArrivals = products.slice(0, 4);
+  const specialOffers = products.filter((p) => p.discountPrice && p.discountPrice < p.price && p.inStock).slice(0, 4);
+  const filteredAllProducts = useMemo(() => selectedHomeCategory === 'all'
+    ? products : products.filter((p) => p.categoryId === selectedHomeCategory), [products, selectedHomeCategory]);
 
-  // 2. Special Offers: exactly 4 products with discount prices
-  const specialOffers = products
-    .filter((p) => p.discountPrice && p.discountPrice < p.price && p.inStock)
-    .slice(0, 4);
-
-  // 3. All Products: filtered by selectedHomeCategory
-  const filteredAllProducts = useMemo(() => {
-    if (selectedHomeCategory === 'all') {
-      return products;
-    }
-    return products.filter((p) => p.categoryId === selectedHomeCategory);
-  }, [products, selectedHomeCategory]);
+  const goToShop = (category = 'all') => {
+    setActiveCategoryFilter(category);
+    navigateTo('shop');
+  };
 
   return (
-    <div className="space-y-16 sm:space-y-24 pb-20">
-      {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden pt-4 sm:pt-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left Content */}
-            <div className="lg:col-span-6 space-y-6">
-              <div className="space-y-3">
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-stone-900 font-heading tracking-tight leading-tight [text-wrap:balance]">
-                  {heroBanner.title}
-                </h1>
-                <p className="text-base sm:text-lg text-stone-600 font-normal leading-relaxed max-w-lg">
-                  {heroBanner.subtitle}
-                </p>
-              </div>
-
-              {/* Clean CTA Button */}
-              <div className="pt-2">
-                <button
-                  onClick={() => {
-                    const el = document.getElementById('all-products');
-                    if (el) {
-                      el.scrollIntoView({ behavior: 'smooth' });
-                    } else {
-                      navigateTo('shop');
-                    }
-                  }}
-                  className="px-7 py-4 bg-[#005C6E] hover:bg-[#004b5a] active:scale-95 text-white font-bold text-sm rounded-2xl shadow-md flex items-center gap-2.5 transition-all cursor-pointer group"
-                >
-                  <span>{heroBanner.ctaText}</span>
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+    <div className="pb-20">
+      <section className="pt-5 sm:pt-9 pb-12 sm:pb-16">
+        <div className="page-shell">
+          <div className="relative overflow-hidden rounded-[24px] sm:rounded-[30px] bg-[#f2f0e9] min-h-[430px] sm:min-h-[500px] grid lg:grid-cols-2 items-center">
+            <div className="relative z-10 px-6 py-10 sm:px-12 lg:px-14 lg:py-16 max-w-2xl">
+              <div className="section-kicker mb-4">A thoughtful world of making</div>
+              <h1 className="text-[2.45rem] sm:text-5xl lg:text-[3.65rem] font-semibold leading-[1.08] tracking-[-.045em] text-[#173d40]">
+                {heroBanner.title || 'Create Something Beautiful.'}
+              </h1>
+              <p className="mt-5 max-w-md text-sm sm:text-base leading-7 text-[#66716e]">
+                {heroBanner.subtitle || 'Discover art and craft essentials selected for curious minds and creative hands.'}
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <button onClick={() => goToShop()} className="brand-button inline-flex items-center gap-2 px-6 py-3.5 text-sm font-semibold shadow-sm">
+                  {heroBanner.ctaText || 'Explore the collection'} <ArrowRight size={16}/>
+                </button>
+                <button onClick={() => document.getElementById('shop-by-category')?.scrollIntoView({behavior:'smooth'})} className="inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold text-[#31575a] hover:text-[#006673]">
+                  Browse categories <ArrowUpRight size={16}/>
                 </button>
               </div>
             </div>
-
-            {/* Right Media */}
-            <div className="lg:col-span-6 relative">
-              <div className="relative rounded-3xl overflow-hidden shadow-xl border border-stone-200/90 bg-stone-100 aspect-16/10 sm:aspect-16/9 lg:aspect-4/3 group">
-                <img
-                  src={heroBanner.imageUrl || '/src/assets/images/hero_tulips_craft_workspace_1793821760325.jpg'}
-                  alt={heroBanner.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
-                />
-              </div>
-
-              {/* Subtle ambient glow behind */}
-              <div className="absolute -top-6 -right-6 w-48 h-48 bg-[#FFA000]/15 rounded-full blur-3xl pointer-events-none -z-10" />
-              <div className="absolute -bottom-6 -left-6 w-48 h-48 bg-[#008C99]/15 rounded-full blur-3xl pointer-events-none -z-10" />
+            <div className="relative h-[260px] sm:h-[340px] lg:h-full lg:min-h-[500px]">
+              <img src={heroBanner.imageUrl || '/assets/hero-art-craft.jpg'} alt="Art and craft materials" className="absolute inset-0 h-full w-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }}/>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#f2f0e9]/25 via-transparent to-transparent lg:bg-gradient-to-r lg:from-[#f2f0e9] lg:via-[#f2f0e9]/10 lg:to-transparent"/>
             </div>
+            <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full border border-[#e6c47d]/40 pointer-events-none"/>
           </div>
         </div>
       </section>
 
-      {/* 2. NEW ARRIVALS: Exactly 4 products */}
-      <section id="new-arrivals" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-stone-200">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 font-heading">
-              New Arrivals
-            </h2>
-          </div>
-
-          <button
-            onClick={() => {
-              const el = document.getElementById('all-products');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="text-xs font-semibold text-[#005C6E] hover:text-[#008C99] flex items-center gap-1.5 cursor-pointer self-start sm:self-auto"
-          >
-            <span>Browse Full Catalog</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+      <section id="shop-by-category" className="page-shell py-8 sm:py-12">
+        <div className="flex items-end justify-between gap-4 mb-6">
+          <div><div className="section-kicker mb-2">Find your materials</div><h2 className="section-heading">Shop by category</h2></div>
+          <button onClick={() => goToShop()} className="text-sm font-semibold text-[#006673] inline-flex items-center gap-1">All categories <ArrowRight size={15}/></button>
         </div>
-
-        {/* 4 Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-          {newArrivals.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
-
-      {/* 3. SPECIAL OFFERS: Exactly 4 products */}
-      <section id="special-offers" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-stone-200">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-[#FFA000] flex items-center justify-center shrink-0">
-              <Tag className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-[#FFA000] mb-0.5">
-                Limited Time Deals
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 font-heading">
-                Special Offers
-              </h2>
-            </div>
-          </div>
-        </div>
-
-        {/* 4 Discount Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-          {specialOffers.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
-
-      {/* 4. ALL PRODUCTS: Category chips in a row ("All Products" first and selected by default, then every category) */}
-      <section id="all-products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pb-4 border-b border-stone-200">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 font-heading">
-              All Products
-            </h2>
-            <p className="text-xs sm:text-sm text-stone-500 mt-1">
-              Showing {filteredAllProducts.length} of {products.length} craft &amp; art supplies
-            </p>
-          </div>
-        </div>
-
-        {/* Category Chips in a row */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            {/* Main "All Products" Chip (Shown First & Selected by Default) */}
-            <button
-              onClick={() => setSelectedHomeCategory('all')}
-              className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                selectedHomeCategory === 'all'
-                  ? 'bg-[#005C6E] text-white shadow-xs'
-                  : 'bg-white text-stone-700 border border-stone-200 hover:bg-stone-50'
-              }`}
-            >
-              All Products ({products.length})
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+          {categories.slice(0,5).map((cat, index) => (
+            <button key={cat.id} onClick={() => goToShop(cat.id)} className="group text-left rounded-2xl border border-[#e9e7e1] bg-white px-4 py-5 sm:p-6 hover:border-[#9dbfc0] hover:shadow-sm transition-all">
+              <span className="text-[11px] font-semibold tracking-widest text-[#b17b22]">0{index+1}</span>
+              <span className="mt-3 block text-sm sm:text-base font-semibold text-[#263536] group-hover:text-[#006673]">{cat.name}</span>
+              <span className="mt-2 block text-xs text-[#828986]">{products.filter(p => p.categoryId === cat.id).length} products</span>
             </button>
-
-            {/* Individual Craft Categories beside it */}
-            {categories.map((cat) => {
-              const count = products.filter((p) => p.categoryId === cat.id).length;
-              const isSelected = selectedHomeCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedHomeCategory(cat.id)}
-                  className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${
-                    isSelected
-                      ? 'bg-[#005C6E] text-white font-bold shadow-xs'
-                      : 'bg-white text-stone-700 border border-stone-200 hover:bg-stone-50'
-                  }`}
-                >
-                  {cat.name} ({count})
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* All Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {filteredAllProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
           ))}
         </div>
+      </section>
+
+      {newArrivals.length > 0 && <section id="new-arrivals" className="page-shell py-10 sm:py-14 scroll-mt-24">
+        <div className="flex items-end justify-between mb-6"><div><div className="section-kicker mb-2">Recently added</div><h2 className="section-heading">New arrivals</h2></div><button onClick={() => goToShop()} className="text-sm font-semibold text-[#006673]">View all <ArrowRight className="inline" size={15}/></button></div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">{newArrivals.map(p => <ProductCard key={p.id} product={p}/>)}</div>
+      </section>}
+
+      {specialOffers.length > 0 && <section id="special-offers" className="py-10 sm:py-14 bg-[#f3f0e7]">
+        <div className="page-shell"><div className="flex items-end justify-between mb-6"><div><div className="section-kicker mb-2">Selected offers</div><h2 className="section-heading">Thoughtful finds, special prices</h2></div></div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">{specialOffers.map(p => <ProductCard key={p.id} product={p}/>)}</div>
+        </div>
+      </section>}
+
+      <section id="all-products" className="page-shell py-12 sm:py-16 scroll-mt-24">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6"><div><div className="section-kicker mb-2">Explore the store</div><h2 className="section-heading">Made for your next idea</h2><p className="mt-2 text-sm text-[#78817d]">{filteredAllProducts.length} of {products.length} products</p></div><button onClick={() => goToShop()} className="text-sm font-semibold text-[#006673]">Open full shop <ArrowUpRight className="inline" size={15}/></button></div>
+        <div className="flex gap-2 overflow-x-auto pb-4 mb-4">
+          <button onClick={() => setSelectedHomeCategory('all')} className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold border transition-colors ${selectedHomeCategory==='all'?'bg-[#006673] text-white border-[#006673]':'bg-white text-[#52605d] border-[#e5e5df]'}`}>All products</button>
+          {categories.map(cat => <button key={cat.id} onClick={() => setSelectedHomeCategory(cat.id)} className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold border transition-colors ${selectedHomeCategory===cat.id?'bg-[#006673] text-white border-[#006673]':'bg-white text-[#52605d] border-[#e5e5df]'}`}>{cat.name}</button>)}
+        </div>
+        {filteredAllProducts.length ? <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">{filteredAllProducts.map(p => <ProductCard key={p.id} product={p}/>)}</div> : <p className="py-12 text-center text-sm text-[#78817d]">No products in this category yet.</p>}
       </section>
     </div>
   );
