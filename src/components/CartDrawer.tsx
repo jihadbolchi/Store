@@ -85,14 +85,21 @@ export const CartDrawer: React.FC = () => {
                 const effectivePrice = item.product.discountPrice ?? item.product.price;
                 return (
                   <div key={item.product.id} className="py-4 flex gap-3.5 items-center">
-                    <img
-                      src={item.product.images[0] || ''}
-                      alt={item.product.name}
-                      loading="lazy"
-                      onError={(event) => { event.currentTarget.style.display = 'none'; }}
-                      referrerPolicy="no-referrer"
-                      className="w-16 h-16 object-cover rounded-xl border border-stone-200 shrink-0 bg-stone-50"
-                    />
+                    {item.product.images?.[0] ? (
+                      <img
+                        src={item.product.images[0]}
+                        alt={item.product.name}
+                        loading="lazy"
+                        decoding="async"
+                        onError={(event) => { event.currentTarget.style.display = 'none'; }}
+                        referrerPolicy="no-referrer"
+                        className="w-16 h-16 object-cover rounded-xl border border-stone-200 shrink-0 bg-stone-50"
+                      />
+                    ) : (
+                      <div aria-label="Product image unavailable" className="w-16 h-16 rounded-xl border border-stone-200 shrink-0 bg-stone-50 flex items-center justify-center text-stone-400">
+                        <ShoppingBag className="w-5 h-5" />
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <h4 className="text-xs font-semibold text-stone-900 line-clamp-1">
