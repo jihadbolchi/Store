@@ -34,11 +34,15 @@ export const CheckoutView: React.FC = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Delivery charge calculation
-  const deliveryCharge =
+  // Apply the configured free-delivery threshold consistently with order creation.
+  const standardDeliveryCharge =
     deliveryArea === 'inside_dhaka'
       ? DELIVERY_CONFIG.insideDhaka.fee
       : DELIVERY_CONFIG.outsideDhaka.fee;
+  const qualifiesForFreeDelivery =
+    DELIVERY_CONFIG.freeDeliveryThreshold > 0 &&
+    cartSubtotal >= DELIVERY_CONFIG.freeDeliveryThreshold;
+  const deliveryCharge = qualifiesForFreeDelivery ? 0 : standardDeliveryCharge;
 
   const grandTotal = cartSubtotal + deliveryCharge;
 
@@ -367,7 +371,9 @@ export const CheckoutView: React.FC = () => {
                 <span>
                   Delivery Charge ({deliveryArea === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka'}):
                 </span>
-                <span className="font-bold text-[#0B6A75] font-tabular">৳{deliveryCharge}</span>
+                <span className="font-bold text-[#0B6A75] font-tabular">
+                  {deliveryCharge === 0 ? 'Free' : `৳${deliveryCharge}`}
+                </span>
               </div>
             </div>
 
