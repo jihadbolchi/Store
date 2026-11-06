@@ -76,17 +76,17 @@ export const ShopView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="page-shell py-8 sm:py-12 space-y-8 sm:space-y-10">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-stone-200">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#e9e7e1]">
         <div>
-          <div className="text-xs font-bold uppercase tracking-wider text-[#0B6A75] mb-1">
+          <div className="section-kicker mb-2">
             Artisan Catalog
           </div>
-          <h1 className="text-3xl font-extrabold text-stone-900 font-heading">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[#202525] font-heading">
             {activeCategory ? activeCategory.name : 'All Art & Craft Supplies'}
           </h1>
-          <p className="text-sm text-stone-500 mt-1">
+          <p className="text-sm text-[#747b79] mt-2 max-w-2xl leading-6">
             {activeCategory
               ? activeCategory.description
               : 'Browse our complete catalog of curated artist materials with doorstep delivery across Bangladesh.'}
@@ -110,7 +110,7 @@ export const ShopView: React.FC = () => {
               placeholder="Search resin, wood blocks, wax, paints..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-stone-300 rounded-xl text-xs sm:text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#0B6A75] transition-all shadow-2xs"
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#e4e2dc] rounded-xl text-xs sm:text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#006673] transition-all shadow-2xs"
             />
             {searchQuery && (
               <button
@@ -146,7 +146,7 @@ export const ShopView: React.FC = () => {
               onClick={() => setInStockOnly(!inStockOnly)}
               className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer whitespace-nowrap shadow-2xs ${
                 inStockOnly
-                  ? 'bg-teal-50 border-[#0B6A75] text-[#0B6A75]'
+                  ? 'bg-[#edf5f4] border-[#006673] text-[#006673]'
                   : 'bg-white border-stone-300 text-stone-600 hover:text-stone-900'
               }`}
             >
@@ -162,7 +162,7 @@ export const ShopView: React.FC = () => {
             onClick={() => setActiveCategoryFilter('all')}
             className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               activeCategoryFilter === 'all'
-                ? 'bg-[#0B6A75] text-white shadow-xs'
+                ? 'bg-[#006673] text-white shadow-xs'
                 : 'bg-white text-stone-700 border border-stone-200 hover:bg-stone-50'
             }`}
           >
@@ -202,7 +202,7 @@ export const ShopView: React.FC = () => {
           </p>
           <button
             onClick={resetFilters}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-[#0B6A75] hover:bg-[#084f57] rounded-xl transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-[#006673] hover:bg-[#00545f] rounded-xl transition-colors cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset All Filters</span>
