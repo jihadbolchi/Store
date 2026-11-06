@@ -28,7 +28,7 @@ export const DELIVERY_CONFIG = {
     estimatedDelivery: '2 – 4 Working Days',
   },
 
-  // Free delivery threshold (optional perk: free shipping on orders ৳2500+)
+  // Free delivery threshold: orders at or above this subtotal qualify for free delivery.
   freeDeliveryThreshold: 3500,
 
   // WhatsApp Order Config
