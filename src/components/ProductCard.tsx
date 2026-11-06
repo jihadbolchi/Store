@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Product } from '../types';
 import { useStore } from '../context/StoreContext';
-import { ShoppingBag, Eye, MessageCircle } from 'lucide-react';
+import { ShoppingBag, ArrowUpRight } from 'lucide-react';
 import { DELIVERY_CONFIG } from '../config/delivery';
 
 interface ProductCardProps {
@@ -20,13 +20,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [imageFailed, setImageFailed] = useState(false);
   const primaryImage = product.images.find((image) => typeof image === 'string' && image.trim().length > 0);
 
-  const handleWhatsAppQuickInquiry = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const message = encodeURIComponent(
-      `Hello Dhaka Art Nook! I'm interested in "${product.name}" (৳${effectivePrice}). Is it currently available for delivery?`
-    );
-    window.open(`${DELIVERY_CONFIG.whatsapp.waUrlBase}?text=${message}`, '_blank', 'noopener,noreferrer');
-  };
+
 
   return (
     <div
@@ -68,25 +62,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
         )}
 
-        {/* Quick View Hover Action */}
-        <div className="absolute inset-0 bg-stone-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              viewProductDetail(product);
-            }}
-            className="p-2.5 bg-white text-stone-900 rounded-xl shadow-md hover:bg-stone-50 active:scale-95 transition-all text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
-          >
-            <Eye className="w-4 h-4 text-[#005C6E]" />
-            <span>Details</span>
-          </button>
-          <button
-            onClick={handleWhatsAppQuickInquiry}
-            className="p-2.5 bg-[#25D366] text-white rounded-xl shadow-md hover:bg-[#20ba59] active:scale-95 transition-all text-xs font-semibold flex items-center gap-1 cursor-pointer"
-            title="Inquire on WhatsApp"
-          >
-            <MessageCircle className="w-4 h-4" />
-          </button>
+        <div className="absolute inset-x-0 bottom-0 flex justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-2 text-xs font-semibold text-[#006673] shadow-sm">View details <ArrowUpRight size={14}/></span>
         </div>
       </div>
 
@@ -94,12 +71,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
         <div>
           {/* Category kicker */}
-          <div className="text-[11px] font-medium tracking-wider uppercase text-stone-500 mb-1">
+          <div className="text-[10px] font-semibold tracking-[.12em] uppercase text-[#8a918e] mb-1">
             {product.categoryName}
           </div>
 
           {/* Product Title */}
-          <h3 className="text-[13px] sm:text-sm font-semibold text-stone-900 line-clamp-2 leading-snug group-hover:text-[#005C6E] transition-colors min-h-[2.4rem]">
+          <h3 className="text-[13px] sm:text-sm font-semibold text-[#202525] line-clamp-2 leading-snug group-hover:text-[#006673] transition-colors min-h-[2.4rem]">
             {product.name}
           </h3>
         </div>
@@ -131,7 +108,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             }}
             className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs ${
               product.inStock
-                ? 'bg-[#005C6E] text-white hover:bg-[#004b5a] active:scale-95'
+                ? 'bg-[#006673] text-white hover:bg-[#00545f] active:scale-95'
                 : 'bg-stone-200 text-stone-400 cursor-not-allowed'
             }`}
           >
