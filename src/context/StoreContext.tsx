@@ -673,10 +673,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       };
     });
 
-    const deliveryCharge =
+    const standardDeliveryCharge =
       customer.deliveryArea === 'inside_dhaka'
         ? DELIVERY_CONFIG.insideDhaka.fee
         : DELIVERY_CONFIG.outsideDhaka.fee;
+    const qualifiesForFreeDelivery =
+      DELIVERY_CONFIG.freeDeliveryThreshold > 0 &&
+      cartSubtotal >= DELIVERY_CONFIG.freeDeliveryThreshold;
+    const deliveryCharge = qualifiesForFreeDelivery ? 0 : standardDeliveryCharge;
 
     const grandTotal = cartSubtotal + deliveryCharge;
 
