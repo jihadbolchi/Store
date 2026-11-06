@@ -293,17 +293,10 @@ export const ProductDetailView: React.FC = () => {
             </div>
           </div>
 
-          {/* Delivery & Trust Strip Inside Module */}
-          <div className="bg-stone-50/80 rounded-xl p-4 border border-stone-200 space-y-3 text-xs sm:text-sm text-stone-600">
+          <div className="rounded-xl border border-[#e9e7e1] bg-[#faf9f6] p-4 text-xs sm:text-sm text-[#555e5b]">
             <div className="flex items-center gap-2.5">
-              <Truck className="w-4 h-4 text-[#0B6A75] shrink-0" />
-              <span>
-                <strong>৳80</strong> Inside Dhaka Metro (24h) · <strong>৳130</strong> All Districts (48h)
-              </span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>Direct replacement guarantee for transit breakage or defect</span>
+              <Truck className="w-4 h-4 text-[#006673] shrink-0" />
+              <span>Delivery from ৳{DELIVERY_CONFIG.insideDhaka.fee} in Dhaka and ৳{DELIVERY_CONFIG.outsideDhaka.fee} nationwide</span>
             </div>
           </div>
         </div>
