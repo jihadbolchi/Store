@@ -54,7 +54,7 @@ const MainContent: React.FC = () => {
 export default function App() {
   return (
     <StoreProvider>
-      <div className="min-h-screen flex flex-col bg-[#FAFAF7] text-stone-900 font-sans selection:bg-[#005C6E] selection:text-white">
+      <div className="min-h-screen flex flex-col bg-[#FCFBF8] text-[#202525] font-sans selection:bg-[#005C6E] selection:text-white">
         {/* Navigation Top Bar */}
         <Header />
 
