@@ -10,7 +10,6 @@ import { Footer } from './components/Footer';
 import { CartDrawer } from './components/CartDrawer';
 import { Toast } from './components/Toast';
 import { AuthModal } from './components/AuthModal';
-import { LiveChatWidget } from './components/LiveChatWidget';
 
 // Views
 import { HomeView } from './views/HomeView';
@@ -22,9 +21,6 @@ import { OrderSuccessView } from './views/OrderSuccessView';
 import { AdminView } from './views/AdminView';
 import { AboutView } from './views/AboutView';
 import { ContactView } from './views/ContactView';
-
-import { DELIVERY_CONFIG } from './config/delivery';
-import { MessageCircle } from 'lucide-react';
 
 const MainContent: React.FC = () => {
   const { currentView } = useStore();
